@@ -1,0 +1,145 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Updated color tokens to match luxury candle brand design */
+  --background: #f2f0eb; /* Off-White for overall background */
+  --foreground: #021f59; /* Deep Blue for primary text */
+  --card: #ffffff; /* White for card backgrounds */
+  --card-foreground: #403a20; /* Earthy Brown for text on cards */
+  --popover: #f2f0eb; /* Off-White for popover backgrounds */
+  --popover-foreground: #021f59; /* Deep Blue for popover text */
+  --primary: #f2921d; /* Vibrant Orange for call-to-action buttons */
+  --primary-foreground: #ffffff; /* White text on primary buttons */
+  --secondary: #403a20; /* Earthy Brown for secondary actions */
+  --secondary-foreground: #ffffff; /* White text on secondary buttons */
+  --muted: #1e3259; /* Deep Blue for muted text elements */
+  --muted-foreground: #f2f0eb; /* Off-White for contrast */
+  --accent: #f2921d; /* Vibrant Orange as accent color */
+  --accent-foreground: #021f59; /* Deep Blue for accent text */
+  --destructive: #c53030; /* Red for error messages */
+  --destructive-foreground: #ffffff; /* White text on destructive actions */
+  --border: #e2e8f0; /* Light border for separation */
+  --input: #ffffff; /* White for input backgrounds */
+  --ring: #f2921d; /* Vibrant Orange for focus rings */
+  --chart-1: #f2921d; /* Color for chart elements */
+  --chart-2: #403a20; /* Earthy Brown for chart elements */
+  --chart-3: #021f59; /* Deep Blue for chart elements */
+  --chart-4: #1e3259; /* Darker shade of blue for depth */
+  --chart-5: #f2f0eb; /* Light shade for contrast */
+  --radius: 0.5rem; /* Rounded corners for a softer look */
+  --sidebar: #f2f0eb; /* Off-White for sidebar background */
+  --sidebar-foreground: #021f59; /* Deep Blue for sidebar text */
+  --sidebar-primary: #403a20; /* Earthy Brown for primary sidebar elements */
+  --sidebar-primary-foreground: #f2f0eb; /* Off-White for text on primary elements */
+  --sidebar-accent: #f2921d; /* Vibrant Orange for sidebar accents */
+  --sidebar-accent-foreground: #021f59; /* Deep Blue for accent text */
+  --sidebar-border: #e2e8f0; /* Light border for sidebar separation */
+  --sidebar-ring: #f2921d; /* Focus ring for sidebar elements */
+}
+
+.dark {
+  /* Updated dark mode tokens to maintain brand consistency */
+  --background: #021f59; /* Deep Blue for dark background */
+  --foreground: #f2f0eb; /* Off-White for dark mode text */
+  --card: #1e3259; /* Darker blue for cards */
+  --card-foreground: #f2f0eb; /* Off-White for card text */
+  --popover: #1e3259; /* Darker blue for popovers */
+  --popover-foreground: #f2f0eb; /* Off-White for popover text */
+  --primary: #f2921d; /* Keep vibrant orange for primary */
+  --primary-foreground: #021f59; /* Deep blue text on orange */
+  --secondary: #403a20; /* Earthy brown for secondary */
+  --secondary-foreground: #f2f0eb; /* Off-White text */
+  --muted: #403a20; /* Earthy brown for muted elements */
+  --muted-foreground: #f2f0eb; /* Off-White for muted text */
+  --accent: #f2921d; /* Vibrant orange accent */
+  --accent-foreground: #021f59; /* Deep blue accent text */
+  --destructive: #ef4444; /* Brighter red for dark mode */
+  --destructive-foreground: #f2f0eb; /* Off-White text */
+  --border: #403a20; /* Earthy brown borders */
+  --input: #1e3259; /* Darker blue inputs */
+  --ring: #f2921d; /* Orange focus rings */
+  --chart-1: #f2921d;
+  --chart-2: #403a20;
+  --chart-3: #f2f0eb;
+  --chart-4: #1e3259;
+  --chart-5: #021f59;
+  --sidebar: #021f59;
+  --sidebar-foreground: #f2f0eb;
+  --sidebar-primary: #f2921d;
+  --sidebar-primary-foreground: #021f59;
+  --sidebar-accent: #403a20;
+  --sidebar-accent-foreground: #f2f0eb;
+  --sidebar-border: #403a20;
+  --sidebar-ring: #f2921d;
+}
+
+@theme inline {
+  /* Updated font variables for luxury typography */
+  --font-sans: var(--font-lato);
+  --font-serif: var(--font-playfair);
+  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Added typography styles for luxury brand */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-serif text-balance;
+  }
+
+  p,
+  span,
+  div {
+    @apply font-sans text-pretty;
+  }
+}
