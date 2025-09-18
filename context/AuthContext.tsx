@@ -20,10 +20,6 @@ interface RegisterData {
     first_name: string;
     last_name: string;
     password: string;
-    re_password?: string;
-    cpf?: string;
-    phone_number?: string;
-    birthday?: string;
 }
 
 interface AuthContextType {
@@ -99,20 +95,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const register = async (userData: RegisterData) => {
-        try {
-            await api.post('/auth/users/', userData);
-            router.push('/login');
-        } catch (error) {
-            if (isAxiosError(error) && error.response) {
-                console.error('Falha no registo:', error.response?.data);
-                const errorMessages = Object.values(error.response.data).join(' ');
-                throw new Error('Não foi possível completar o registo. Verifique os seus dados (ex: email já pode estar em uso).');
-            } else {
-                console.error('Falha no registo:', error);
-                throw new Error('Não foi possível completar o registo. Verifique os seus dados.');
-            }
-        }
-    };
+        try {
+            await api.post('/client/register/', userData);
+            
+            alert("Conta criada com sucesso! Por favor, faça o login.");
+            router.push('/login');
+
+        } catch (error) {
+            console.error('Falha no registo:', error);
+            throw error; 
+        }
+    };
 
     const logout = () => {
         localStorage.removeItem('accessToken');
