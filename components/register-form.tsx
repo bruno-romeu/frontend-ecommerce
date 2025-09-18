@@ -50,7 +50,7 @@ export function RegisterForm() {
       newErrors.password = "A senha deve ter pelo menos 6 caracteres";
     }
     if (formData.password2 !== formData.password2) {
-      newErrors.confirmPassword = "As senhas não coincidem";
+      newErrors.password2 = "As senhas não coincidem";
     }
     if (!formData.acceptTerms) {
       newErrors.acceptTerms = "Você deve aceitar os termos de serviço";
@@ -60,7 +60,6 @@ export function RegisterForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // 4. Lógica do handleSubmit limpa e correta
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -157,15 +156,15 @@ export function RegisterForm() {
             {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
           </div>
           <div className="space-y-1">
-            <Label htmlFor="confirmPassword">Confirmar Senha</Label>
+            <Label htmlFor="password2">Confirmar Senha</Label>
             <div className="relative">
               <Input
-                id="confirmPassword"
+                id="password2"
                 type={showpassword2 ? "text" : "password"}
                 placeholder="Digite a senha novamente"
                 value={formData.password2}
-                onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-                className={errors.confirmPassword ? "border-destructive" : ""}
+                onChange={(e) => handleInputChange("password2", e.target.value)}
+                className={errors.password2 ? "border-destructive" : ""}
               />
               <Button
                 type="button"
