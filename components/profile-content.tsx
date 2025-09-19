@@ -65,16 +65,39 @@ export function ProfileContent({ activeTab, profile, addresses }: ProfileContent
           </Card>
 
           {addresses.map(address => (
-            <Card key={address.id}>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle>Endereço de Entrega</CardTitle>
-                <Button variant="outline" size="sm">Editar</Button>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-sm pt-4">
-                {/* ... conteúdo do endereço ... */}
-              </CardContent>
-            </Card>
-          ))}
+                <Card key={address.id}>
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle>Endereço de Entrega</CardTitle>
+                    <Button variant="outline" size="sm">Editar</Button>
+                  </CardHeader>
+                  <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-xs text-muted-foreground">CEP</Label>
+                      <p>{address.zipcode}</p>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Endereço</Label>
+                      <p>{address.street}</p>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Número</Label>
+                      <p>{address.number}</p>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Complemento</Label>
+                      <p>{address.complement || "N/A"}</p>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Bairro</Label>
+                      <p>{address.neighborhood}</p>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Cidade / Estado</Label>
+                      <p>{address.city} / {address.state}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
         </div>
       )}
 
