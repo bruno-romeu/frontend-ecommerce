@@ -1,5 +1,9 @@
 "use client";
 
+import { Navbar } from "@/components/navbar"
+import { Footer } from "@/components/footer"
+import { ProfileSidebar } from "@/components/profile-sidebar"
+import { ProfileContent } from "@/components/profile-content"
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
@@ -80,8 +84,8 @@ export default function PerfilPage() {
 
   return (
     <div className="container mx-auto py-8">
+      <Navbar />
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        {/* Sidebar de Navegação */}
         <aside className="md:col-span-1">
           <nav className="flex flex-col space-y-2">
             <Button
@@ -104,69 +108,70 @@ export default function PerfilPage() {
           </nav>
         </aside>
 
-        {/* Conteúdo Principal */}
         <main className="md:col-span-3">
           {activeTab === 'dados' && (
             <div className="space-y-6">
               <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle>Informações Pessoais</CardTitle>
                   <Button variant="outline" size="sm">Editar</Button>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-xs text-muted-foreground">Nome Completo</Label>
-                    <p>{profile.first_name} {profile.last_name}</p>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-sm pt-4">
+                  
+                  <div className="space-y-1">
+                    <Label className="text-muted-foreground">Nome Completo</Label>
+                    <p className="font-medium">{profile.first_name} {profile.last_name}</p>
                   </div>
-                  <div>
-                    <Label className="text-xs text-muted-foreground">E-mail</Label>
-                    <p>{profile.email}</p>
+                  <div className="space-y-1">
+                    <Label className="text-muted-foreground">E-mail</Label>
+                    <p className="font-medium">{profile.email}</p>
                   </div>
-                  <div>
-                    <Label className="text-xs text-muted-foreground">Telefone</Label>
-                    <p>{profile.phone_number || "Não informado"}</p>
+                  <div className="space-y-1">
+                    <Label className="text-muted-foreground">Telefone</Label>
+                    <p className="font-medium">{profile.phone_number || "Não informado"}</p>
                   </div>
-                  <div>
-                    <Label className="text-xs text-muted-foreground">CPF</Label>
-                    <p>{profile.cpf || "Não informado"}</p>
+                  <div className="space-y-1">
+                    <Label className="text-muted-foreground">CPF</Label>
+                    <p className="font-medium">{profile.cpf || "Não informado"}</p>
                   </div>
-                  <div>
-                    <Label className="text-xs text-muted-foreground">Data de Nascimento</Label>
-                    <p>{profile.birthday || "Não informado"}</p>
+                  <div className="space-y-1">
+                    <Label className="text-muted-foreground">Data de Nascimento</Label>
+                    <p className="font-medium">{profile.birthday || "Não informado"}</p>
                   </div>
+
                 </CardContent>
               </Card>
 
               {addresses.map(address => (
                 <Card key={address.id}>
-                  <CardHeader className="flex flex-row items-center justify-between">
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle>Endereço de Entrega</CardTitle>
                     <Button variant="outline" size="sm">Editar</Button>
                   </CardHeader>
-                  <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-xs text-muted-foreground">CEP</Label>
-                      <p>{address.zipcode}</p>
+                  <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-sm pt-4">
+                    <div className="space-y-1">
+                      <Label className="text-muted-foreground">CEP</Label>
+                      <p className="font-medium">{address.zipcode}</p>
                     </div>
-                    <div>
-                      <Label className="text-xs text-muted-foreground">Endereço</Label>
-                      <p>{address.street}</p>
+                    <div className="space-y-1">
+                      <Label className="text-muted-foreground">Cidade / Estado</Label>
+                      <p className="font-medium">{address.city} / {address.state}</p>
                     </div>
-                    <div>
-                      <Label className="text-xs text-muted-foreground">Número</Label>
-                      <p>{address.number}</p>
+                    <div className="space-y-1">
+                      <Label className="text-muted-foreground">Bairro</Label>
+                      <p className="font-medium">{address.neighborhood}</p>
                     </div>
-                    <div>
-                      <Label className="text-xs text-muted-foreground">Complemento</Label>
-                      <p>{address.complement || "N/A"}</p>
+                    <div className="space-y-1">
+                      <Label className="text-muted-foreground">Endereço</Label>
+                      <p className="font-medium">{address.street}</p>
                     </div>
-                    <div>
-                      <Label className="text-xs text-muted-foreground">Bairro</Label>
-                      <p>{address.neighborhood}</p>
+                    <div className="space-y-1">
+                      <Label className="text-muted-foreground">Número</Label>
+                      <p className="font-medium">{address.number}</p>
                     </div>
-                    <div>
-                      <Label className="text-xs text-muted-foreground">Cidade / Estado</Label>
-                      <p>{address.city} / {address.state}</p>
+                    <div className="space-y-1">
+                      <Label className="text-muted-foreground">Complemento</Label>
+                      <p className="font-medium">{address.complement || "N/A"}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -187,6 +192,7 @@ export default function PerfilPage() {
             </div>
           )}
         </main>
+        <Footer />
       </div>
     </div>
   );
