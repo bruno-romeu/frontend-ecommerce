@@ -78,19 +78,21 @@ export default function PerfilPage() {
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="min-h-screen">
       <Navbar />
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        <ProfileSidebar 
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          onLogout={logout}
-        />
-        <ProfileContent 
-          activeTab={activeTab}
-          profile={profile}
-          addresses={addresses}
-        />
+      <div className="container mx-auto py-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <ProfileSidebar
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            onLogout={logout}
+          />
+          <ProfileContent
+            activeTab={activeTab}
+            profile={profile}
+            addresses={addresses}
+          />
+        </div>
       </div>
       <Footer />
     </div>
