@@ -47,7 +47,7 @@ export default function PerfilPage() {
         setLoading(true);
         const [profileResponse, addressesResponse] = await Promise.all([
           api.get('/client/profile/'),
-          api.get('/client /addresses/')
+          api.get('/client/addresses/')
         ]);
         setProfile(profileResponse.data);
         setAddresses(addressesResponse.data);
