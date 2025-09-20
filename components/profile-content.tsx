@@ -42,23 +42,23 @@ export function ProfileContent({ activeTab, profile, addresses }: ProfileContent
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-sm pt-4">
               <div className="space-y-1">
-                <Label className="text-muted-foreground">Nome Completo</Label>
+                <Label className="text-foreground">Nome Completo</Label>
                 <p className="font-medium">{profile.first_name} {profile.last_name}</p>
               </div>
               <div className="space-y-1">
-                <Label className="text-muted-foreground">E-mail</Label>
+                <Label className="text-foreground">E-mail</Label>
                 <p className="font-medium">{profile.email}</p>
               </div>
               <div className="space-y-1">
-                <Label className="text-muted-foreground">Telefone</Label>
+                <Label className="text-foreground">Telefone</Label>
                 <p className="font-medium">{profile.phone_number || "Não informado"}</p>
               </div>
               <div className="space-y-1">
-                <Label className="text-muted-foreground">CPF</Label>
+                <Label className="text-foreground">CPF</Label>
                 <p className="font-medium">{profile.cpf || "Não informado"}</p>
               </div>
               <div className="space-y-1">
-                <Label className="text-muted-foreground">Data de Nascimento</Label>
+                <Label className="text-foreground">Data de Nascimento</Label>
                 <p className="font-medium">{profile.birthday || "Não informado"}</p>
               </div>
             </CardContent>
@@ -72,27 +72,27 @@ export function ProfileContent({ activeTab, profile, addresses }: ProfileContent
                   </CardHeader>
                   <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label className="text-xs text-muted-foreground">CEP</Label>
+                      <Label className="text-xs text-foreground">CEP</Label>
                       <p>{address.zipcode}</p>
                     </div>
                     <div>
-                      <Label className="text-xs text-muted-foreground">Endereço</Label>
+                      <Label className="text-xs text-foreground">Endereço</Label>
                       <p>{address.street}</p>
                     </div>
                     <div>
-                      <Label className="text-xs text-muted-foreground">Número</Label>
+                      <Label className="text-xs text-foreground">Número</Label>
                       <p>{address.number}</p>
                     </div>
                     <div>
-                      <Label className="text-xs text-muted-foreground">Complemento</Label>
+                      <Label className="text-xs text-foreground">Complemento</Label>
                       <p>{address.complement || "N/A"}</p>
                     </div>
                     <div>
-                      <Label className="text-xs text-muted-foreground">Bairro</Label>
+                      <Label className="text-xs text-foreground">Bairro</Label>
                       <p>{address.neighborhood}</p>
                     </div>
                     <div>
-                      <Label className="text-xs text-muted-foreground">Cidade / Estado</Label>
+                      <Label className="text-xs text-foreground">Cidade / Estado</Label>
                       <p>{address.city} / {address.state}</p>
                     </div>
                   </CardContent>
