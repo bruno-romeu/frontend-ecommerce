@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
 import { Navbar } from "@/components/navbar";
-import { Footer } from "react-day-picker";
+import { Footer } from "@/components/footer";
 import { ProfileSidebar } from "@/components/profile-sidebar";
 import { ProfileContent } from "@/components/profile-content";
 
