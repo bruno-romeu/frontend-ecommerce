@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "react-day-picker";
 import { ProfileSidebar } from "@/components/profile-sidebar";
 import { ProfileContent } from "@/components/profile-content";
 
@@ -45,7 +47,7 @@ export default function PerfilPage() {
         setLoading(true);
         const [profileResponse, addressesResponse] = await Promise.all([
           api.get('/client/profile/'),
-          api.get('/client/addresses/')
+          api.get('/client /addresses/')
         ]);
         setProfile(profileResponse.data);
         setAddresses(addressesResponse.data);
@@ -77,6 +79,7 @@ export default function PerfilPage() {
 
   return (
     <div className="container mx-auto py-8">
+      <Navbar />
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         <ProfileSidebar 
           activeTab={activeTab}
@@ -89,6 +92,7 @@ export default function PerfilPage() {
           addresses={addresses}
         />
       </div>
+      <Footer />
     </div>
   );
 }
