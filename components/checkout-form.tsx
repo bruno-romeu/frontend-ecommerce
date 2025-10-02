@@ -23,6 +23,7 @@ export interface CheckoutFormData {
 interface CheckoutFormProps {
   formData: CheckoutFormData;
   setFormData: (data: CheckoutFormData) => void;
+  onCepBlur: (cep: string) => void;
 }
 
 interface StateOption {
@@ -30,7 +31,7 @@ interface StateOption {
   label: string;
 }
 
-export function CheckoutForm({ formData, setFormData }: CheckoutFormProps) {
+export function CheckoutForm({ formData, setFormData, onCepBlur}: CheckoutFormProps) {
   const [states, setStates] = useState<StateOption[]>([]);
   const [isLoadingStates, setIsLoadingStates] = useState(true);
 
@@ -90,7 +91,8 @@ export function CheckoutForm({ formData, setFormData }: CheckoutFormProps) {
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="zipCode">CEP</Label>
-          <Input id="zipCode" name="zipCode" value={formData.zipCode} onChange={handleChange} placeholder="00000-000" required />
+          <Input id="zipCode" name="zipCode" value={formData.zipCode} onChange={handleChange} 
+          onBlur={(e) => onCepBlur(e.target.value)} placeholder="99999-999"  required />
         </div>
         <div className="space-y-2">
           <Label htmlFor="street">Rua / Avenida</Label>

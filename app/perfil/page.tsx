@@ -31,6 +31,18 @@ interface Address {
 export default function PerfilPage() {
   const { user, logout, loading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState('dados');
+
+  const handleProfileUpdate = (updatedProfile: UserProfile) => {
+    setProfile(updatedProfile)
+  }
+
+  const handleAddressUpdate = (updatedAddress: Address) => {
+    setAddresses(prevAddresses =>
+      prevAddresses.map(addr =>
+        addr.id === updatedAddress.id ? updatedAddress : addr
+      )
+    );
+  };
   
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -91,6 +103,8 @@ export default function PerfilPage() {
             activeTab={activeTab}
             profile={profile}
             addresses={addresses}
+            onProfileUpdate={handleProfileUpdate}
+            onAddressUpdate={handleAddressUpdate}
           />
         </div>
       </div>

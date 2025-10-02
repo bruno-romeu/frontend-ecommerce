@@ -55,8 +55,33 @@ export default function CheckoutPage() {
         setIsLoadingAddresses(false);
       }
     };
-    fetchAddresses();
-  }, []);
+    if (user) {
+      fetchAddresses();
+    }
+  }, [user]);
+
+  const handleCepBlur = async (cepValue: string) => {
+    const cep = cepValue.replace(/\D/g, '');
+    if (cep.length !== 8) return;
+
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await response.json();
+      if (data.erro) {
+        console.error("CEP não encontrado.");
+        return;
+      }
+      setFormData(prev => ({
+        ...prev,
+        street: data.logradouro,
+        neighborhood: data.bairro,
+        city: data.localidade,
+        state: data.uf,
+      }));
+    } catch (error) {
+      console.error("Falha ao buscar CEP:", error);
+    }
+  };
 
 
   const isFormValid = () => {
@@ -137,7 +162,8 @@ export default function CheckoutPage() {
                     />
                   )}
                   {showNewAddressForm && (
-                    <CheckoutForm formData={formData} setFormData={setFormData} />
+                    <CheckoutForm formData={formData} setFormData={setFormData} 
+                    onCepBlur={handleCepBlur}/>
                   )}
                 </>
               )}
