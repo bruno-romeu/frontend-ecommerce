@@ -38,7 +38,7 @@ export function AddressCard({ address, onUpdate }: AddressCardProps) {
   useEffect(() => {
     const fetchStates = async () => {
       try {
-        const response = await api.get('/auth/states/');
+        const response = await api.get('/client/utils/states/');
         setStates(response.data);
       } catch (error) {
         console.error("Falha ao buscar estados:", error);

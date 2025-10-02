@@ -179,7 +179,7 @@ export function ProfileContent({ activeTab, profile, addresses, onProfileUpdate,
                   onChange={handleInputChange} />
                 ) : (
                   <p className="font-medium">{profile.birthday || "Não informado"}</p>
-                )};
+                )}
               </div>
 
               {isEditing && (
