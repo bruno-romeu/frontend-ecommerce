@@ -1,12 +1,9 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
 
 export default function NotFound() {
   return (
     <div className="min-h-screen">
-      <Navbar />
       <main className="py-16">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="space-y-8">
@@ -38,7 +35,6 @@ export default function NotFound() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

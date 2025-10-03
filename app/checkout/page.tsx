@@ -1,8 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
 import { CheckoutForm, CheckoutFormData } from "@/components/checkout-form";
 import { CheckoutSummary } from "@/components/checkout-summary";
 import { AddressSelector } from "@/components/address-selector";
@@ -139,7 +137,6 @@ export default function CheckoutPage() {
 
    return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
       <main className="py-8 flex-grow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-8">Finalizar Compra</h1>
@@ -181,7 +178,6 @@ export default function CheckoutPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

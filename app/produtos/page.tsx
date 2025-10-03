@@ -1,16 +1,7 @@
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
 import { ProductsGrid } from "@/components/products-grid"
 import { ProductFilters } from "@/components/product-filters"
+import { Product } from "@/lib/types";
 import api from '@/lib/api' 
-
-interface Product {
-  id: number;
-  slug: string;
-  name: string;
-  price: number;
-  image_url: string;
-}
 
 async function getProducts(): Promise<Product[]> {
   try {
@@ -23,11 +14,10 @@ async function getProducts(): Promise<Product[]> {
 }
 
 export default async function ProductsPage() {
-  const products = await getProducts();
+  const products: Product[] = await getProducts();
 
   return (
     <div className="min-h-screen">
-      <Navbar />
       <main className="py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8">
@@ -49,7 +39,6 @@ export default async function ProductsPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

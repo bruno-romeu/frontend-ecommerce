@@ -1,5 +1,3 @@
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
 import { ProductGallery } from "@/components/product-gallery"
 import { ProductInfo } from "@/components/product-info"
 import { ProductTabs } from "@/components/product-tabs"
@@ -40,7 +38,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="min-h-screen">
-      <Navbar />
       <main className="py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -61,7 +58,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <RelatedProducts currentProductId={product.id} category={product.category || ""} />
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

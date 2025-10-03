@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
 import { ProfileSidebar } from "@/components/profile-sidebar";
 import { ProfileContent } from "@/components/profile-content";
 
@@ -91,7 +89,6 @@ export default function PerfilPage() {
 
   return (
     <div className="min-h-screen">
-      <Navbar />
       <div className="container mx-auto py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <ProfileSidebar
@@ -108,7 +105,6 @@ export default function PerfilPage() {
           />
         </div>
       </div>
-      <Footer />
     </div>
   );
 }

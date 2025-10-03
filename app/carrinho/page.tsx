@@ -1,7 +1,5 @@
 "use client"
 
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
 import { useCart } from "@/context/CartContext";
 import { CartItems } from "@/components/cart-items"; 
 import { CheckoutSummary } from "@/components/checkout-summary";
@@ -15,7 +13,6 @@ export default function CartPage() {
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Navbar />
         <main className="flex-1 flex flex-col items-center justify-center text-center p-4">
           <ShoppingCart className="h-24 w-24 mx-auto text-muted-foreground mb-6" />
           <h1 className="text-3xl font-bold mb-2">Seu carrinho está vazio</h1>
@@ -26,14 +23,12 @@ export default function CartPage() {
             <Button>Continuar a Comprar</Button>
           </Link>
         </main>
-        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen">
-      <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-3xl md:text-4xl font-bold font-serif mb-8">Seu Carrinho</h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -45,7 +40,6 @@ export default function CartPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

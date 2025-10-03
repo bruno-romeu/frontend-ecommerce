@@ -1,11 +1,8 @@
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
 import { RegisterForm } from "@/components/register-form"
 
 export default function RegisterPage() {
   return (
     <div className="min-h-screen">
-      <Navbar />
       <main className="py-16">
         <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
@@ -15,7 +12,6 @@ export default function RegisterPage() {
           <RegisterForm />
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

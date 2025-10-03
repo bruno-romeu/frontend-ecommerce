@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,7 +29,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
       <main className="flex-1 flex items-center justify-center">
         <div className="max-w-md w-full space-y-8 p-8 bg-card rounded-lg border">
           <div>
@@ -85,7 +82,6 @@ export default function LoginPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

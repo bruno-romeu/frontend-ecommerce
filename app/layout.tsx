@@ -3,8 +3,10 @@ import type { Metadata } from "next"
 import { Lato } from "next/font/google"
 import { Playfair_Display } from "next/font/google"
 import { GeistMono } from "geist/font/mono"
+import { Navbar } from "@/components/navbar"
+import { Footer } from "@/components/footer"
 import { Analytics } from "@vercel/analytics/next"
-import "./globals.css"
+import "./globals.css";
 import { Suspense } from "react"
 import { CartProvider } from "@/context/CartContext"
 import { AuthProvider } from "@/context/AuthContext"
@@ -35,15 +37,23 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={`${lato.variable} ${playfair.variable} ${GeistMono.variable} font-sans antialiased`}>
+    <html lang="pt-BR">
+      <body className={`${lato.variable} font-sans antialiased`}>
         <AuthProvider>
           <CartProvider>
-            <Suspense fallback={null}>{children}</Suspense>
+            <div className="flex flex-col min-h-screen">
+              <Navbar />
+              <main className="flex-grow">
+                <Suspense fallback={<div>Carregando...</div>}>
+                  {children}
+                </Suspense>
+              </main>
+              <Footer />
+            </div>
           </CartProvider>
         </AuthProvider>
         <Analytics />
       </body>
     </html>
-  )
+  );
 }

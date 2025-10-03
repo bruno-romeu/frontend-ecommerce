@@ -1,5 +1,3 @@
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
 import { SearchResults } from "@/components/search-results"
 
 interface SearchPageProps {
@@ -13,7 +11,6 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <div className="min-h-screen">
-      <Navbar />
       <main className="py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8">
@@ -27,7 +24,6 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
           <SearchResults query={query} />
         </div>
       </main>
-      <Footer />
     </div>
   )
 }
