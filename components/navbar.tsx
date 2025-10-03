@@ -3,18 +3,34 @@
 import Link from "next/link"
 import { Search, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { SearchModal } from "@/components/search-modal"
 import { UserDropdown } from "@/components/user-dropdown"
 import { CartDropdown } from "@/components/cart-dropdown"
 import { useCart } from "@/context/CartContext"
 import { useAuth } from "@/context/AuthContext"
+import { Category } from "@/lib/types"
+import api from "@/lib/api"
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
-const { isAuthenticated } = useAuth();
-  const { cartItemCount } = useCart();
+  const { isAuthenticated } = useAuth();
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await api.get('product/categories/'); 
+        setCategories(response.data);
+      } catch (error) {
+        console.error("Falha ao buscar categorias:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
 
 
   return (
@@ -42,21 +58,15 @@ const { isAuthenticated } = useAuth();
                 <button className="hover:text-primary transition-colors">Categorias</button>
                 <div className="absolute top-full left-0 mt-2 w-48 bg-card border border-border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                   <div className="py-2">
-                    <Link
-                      href="/produtos?categoria=velas-aromaticas"
-                      className="block px-4 py-2 text-sm hover:bg-muted"
-                    >
-                      Velas Aromáticas
-                    </Link>
-                    <Link href="/produtos?categoria=difusores" className="block px-4 py-2 text-sm hover:bg-muted">
-                      Difusores
-                    </Link>
-                    <Link href="/produtos?categoria=home-sprays" className="block px-4 py-2 text-sm hover:bg-muted">
-                      Home Sprays
-                    </Link>
-                    <Link href="/produtos?categoria=kits-presente" className="block px-4 py-2 text-sm hover:bg-muted">
-                      Kits Presente
-                    </Link>
+                    {categories.map((category) => (
+                      <Link
+                        key={category.id}
+                        href={`/produtos?categoria=${category.slug}`}
+                        className="block px-4 py-2 text-sm text-foreground hover:bg-muted hover:text-muted-foreground"
+                      >
+                        {category.name}
+                      </Link>
+                    ))}
                   </div>
                 </div>
               </div>

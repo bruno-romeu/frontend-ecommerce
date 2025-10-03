@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Lato } from "next/font/google"
+import { Inter } from "next/font/google"
 import { Playfair_Display } from "next/font/google"
 import { GeistMono } from "geist/font/mono"
 import { Navbar } from "@/components/navbar"
@@ -11,10 +11,10 @@ import { Suspense } from "react"
 import { CartProvider } from "@/context/CartContext"
 import { AuthProvider } from "@/context/AuthContext"
 
-const lato = Lato({
+const lato = Inter({
   subsets: ["latin"],
-  weight: ["300", "400", "700"],
-  variable: "--font-lato",
+  weight: ["200", "400", "700"],
+  variable: "--font-sans-serif",
   display: "swap",
 })
 
