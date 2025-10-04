@@ -1,27 +1,38 @@
+"use client"; // Transforma em um Client Component
+
+import { useState, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
 import { Essence } from "@/lib/types";
-import api from "@/lib/api";
 
+export default function EssenciasPage() {
+  const [essences, setEssences] = useState<Essence[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-async function getEssences(): Promise<Essence[]> {
-  try {
-    const response = await fetch(`${api}product/essences/`, {
-      cache: 'no-store', 
-    });
+  useEffect(() => {
+    const getEssences = async () => {
+      try {
+        const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/essences/`;
+        console.log("Tentando buscar da URL:", apiUrl);
 
-    if (!response.ok) {
-      throw new Error('Falha ao buscar as essências.');
-    }
-    
-    return response.json();
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-}
+        const response = await fetch(apiUrl, { cache: 'no-store' });
 
-export default async function EssenciasPage() {
-  const essences = await getEssences();
+        if (!response.ok) {
+          throw new Error(`A chamada à API falhou com o status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        setEssences(data);
+      } catch (err: any) {
+        console.error("Erro detalhado ao buscar essências:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getEssences();
+  }, []); 
 
   return (
     <div className="container mx-auto py-12 md:py-16">
@@ -35,25 +46,36 @@ export default async function EssenciasPage() {
       </div>
 
       <div className="max-w-3xl mx-auto mt-12 space-y-10">
-        {essences.length > 0 ? (
-          essences.map((essence, index) => (
-            <div key={essence.id}>
-              <div className="space-y-2">
-                {/* No futuro, a imagem pode ser adicionada aqui */}
-                <h2 className="font-serif text-2xl font-semibold text-primary">
-                  {essence.name}
-                </h2>
-                <p className="text-foreground whitespace-pre-line">
-                  {essence.description} | "Essência maravilhosa!"
-                </p>
-              </div>
-              {index < essences.length - 1 && <Separator className="mt-10" />}
-            </div>
-          ))
-        ) : (
-          <p className="text-center text-foreground">
-            Nenhuma essência encontrada. Por favor, volte mais tarde.
+        {loading && (
+          <p className="text-center text-foreground">A carregar essências...</p>
+        )}
+        {error && (
+          <p className="text-center text-destructive">
+            Ocorreu um erro: {error}
           </p>
+        )}
+        {!loading && !error && (
+          <>
+            {essences.length > 0 ? (
+              essences.map((essence, index) => (
+                <div key={essence.id}>
+                  <div className="space-y-2">
+                    <h2 className="font-serif text-2xl font-semibold text-primary">
+                      {essence.name}
+                    </h2>
+                    <p className="text-foreground whitespace-pre-line">
+                      {essence.description}
+                    </p>
+                  </div>
+                  {index < essences.length - 1 && <Separator className="mt-10" />}
+                </div>
+              ))
+            ) : (
+              <p className="text-center text-foreground">
+                Nenhuma essência encontrada. Por favor, volte mais tarde.
+              </p>
+            )}
+          </>
         )}
       </div>
     </div>
