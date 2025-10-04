@@ -1,10 +1,11 @@
 import { Separator } from "@/components/ui/separator";
 import { Essence } from "@/lib/types";
+import api from "@/lib/api";
 
 
 async function getEssences(): Promise<Essence[]> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/product/essences/`, {
+    const response = await fetch(`${api}product/essences/`, {
       cache: 'no-store', 
     });
 
