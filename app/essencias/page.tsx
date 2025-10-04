@@ -1,11 +1,6 @@
 import { Separator } from "@/components/ui/separator";
+import { Essence } from "@/lib/types";
 
-interface Essence {
-  id: number;
-  name: string;
-  description: string;
-  image_url: string | null;
-}
 
 async function getEssences(): Promise<Essence[]> {
   try {
@@ -33,7 +28,7 @@ export default async function EssenciasPage() {
         <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground">
           Nossas Essências
         </h1>
-        <p className="mt-4 text-lg text-muted-foreground">
+        <p className="mt-4 text-lg text-foreground">
           Descubra as notas e sensações por trás de cada aroma que criamos. Nossas essências são selecionadas para transformar seu ambiente e despertar emoções.
         </p>
       </div>
@@ -47,7 +42,7 @@ export default async function EssenciasPage() {
                 <h2 className="font-serif text-2xl font-semibold text-primary">
                   {essence.name}
                 </h2>
-                <p className="text-muted-foreground whitespace-pre-line">
+                <p className="text-foreground whitespace-pre-line">
                   {essence.description}
                 </p>
               </div>
@@ -55,7 +50,7 @@ export default async function EssenciasPage() {
             </div>
           ))
         ) : (
-          <p className="text-center text-muted-foreground">
+          <p className="text-center text-foreground">
             Nenhuma essência encontrada. Por favor, volte mais tarde.
           </p>
         )}

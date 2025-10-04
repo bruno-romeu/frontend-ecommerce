@@ -12,6 +12,10 @@ export interface Size {
 export interface Essence {
     id: number;
     name: string;
+    description: string;
+    is_active: boolean;
+    image_url: string | null;
+    order: number;
 }
 
 export interface Product {
