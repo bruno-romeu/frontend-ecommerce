@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
 import { Essence } from "@/lib/types";
+import api from "@/lib/api";
 
 export default function EssenciasPage() {
   const [essences, setEssences] = useState<Essence[]>([]);
@@ -12,7 +13,7 @@ export default function EssenciasPage() {
   useEffect(() => {
     const getEssences = async () => {
       try {
-        const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/essences/`;
+        const apiUrl = `${api}product/essences/`;
         console.log("Tentando buscar da URL:", apiUrl);
 
         const response = await fetch(apiUrl, { cache: 'no-store' });
