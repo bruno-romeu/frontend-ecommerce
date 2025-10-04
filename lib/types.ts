@@ -16,6 +16,7 @@ export interface Essence {
     is_active: boolean;
     image_url: string | null;
     order: number;
+    slug: string;
 }
 
 export interface Product {

@@ -2,7 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { Essence } from "@/lib/types";
 import api from "@/lib/api";
 
@@ -54,21 +57,30 @@ export default function EssenciasPage() {
       <div className="max-w-3xl mx-auto mt-12 grid gap-8">
         {essences.length > 0 ? (
           essences.map((essence) => (
-            <Card key={essence.id} className="bg-card/80 backdrop-blur-sm">
+            <Card key={essence.id} className="bg-card/80 backdrop-blur-sm flex flex-col">
               <CardHeader>
                 <CardTitle className="font-serif text-2xl font-semibold text-primary">
                   {essence.name}
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              {/* Adicionamos 'flex-grow' para que o conteúdo empurre o rodapé para baixo */}
+              <CardContent className="flex-grow">
                 <p className="text-card-foreground whitespace-pre-line text-base leading-relaxed">
                   {essence.description}
                 </p>
               </CardContent>
+              <CardFooter>
+                <Button asChild className="w-full md:w-auto ml-auto">
+                  <Link href={`/produtos?essencia=${essence.slug}`}>
+                    Ver produtos com esta essência
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardFooter>
             </Card>
           ))
         ) : (
-          <p className="text-center text-foreground">
+          <p className="text-center text-muted-foreground">
             Nenhuma essência encontrada. Por favor, volte mais tarde.
           </p>
         )}
