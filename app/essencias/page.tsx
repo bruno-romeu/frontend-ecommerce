@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Essence } from "@/lib/types";
 import api from "@/lib/api";
 
@@ -50,37 +51,26 @@ export default function EssenciasPage() {
         <hr />
       </div>
 
-      <div className="max-w-3xl mx-auto mt-12 space-y-10">
-        {loading && (
-          <p className="text-center text-foreground">A carregar essências...</p>
-        )}
-        {error && (
-          <p className="text-center text-destructive">
-            Ocorreu um erro: {error}
+      <div className="max-w-3xl mx-auto mt-12 grid gap-8">
+        {essences.length > 0 ? (
+          essences.map((essence) => (
+            <Card key={essence.id} className="bg-card/80 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="font-serif text-2xl font-semibold text-primary">
+                  {essence.name}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-card-foreground whitespace-pre-line text-base leading-relaxed">
+                  {essence.description}
+                </p>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <p className="text-center text-foreground">
+            Nenhuma essência encontrada. Por favor, volte mais tarde.
           </p>
-        )}
-        {!loading && !error && (
-          <>
-            {essences.length > 0 ? (
-              essences.map((essence, index) => (
-                <div key={essence.id}>
-                  <div className="space-y-2">
-                    <h2 className="font-serif text-2xl font-semibold text-primary">
-                      {essence.name}
-                    </h2>
-                    <p className="text-black whitespace-pre-line">
-                      {essence.description}
-                    </p>
-                  </div>
-                  {index < essences.length - 1 && <Separator className="mt-10" />}
-                </div>
-              ))
-            ) : (
-              <p className="text-center text-foreground">
-                Nenhuma essência encontrada. Por favor, volte mais tarde.
-              </p>
-            )}
-          </>
         )}
       </div>
     </div>
