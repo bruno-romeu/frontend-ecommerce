@@ -70,6 +70,9 @@ export function Navbar() {
                   </div>
                 </div>
               </div>
+              <Link href="/essencias" className="hover:text-primary transition-colors">
+                Nossas Essências
+              </Link>
             </div>
 
             {/* Right Icons */}
@@ -133,6 +136,13 @@ export function Navbar() {
                     Kits Presente
                   </Link>
                 </div>
+                <Link 
+                  href="/essencias" 
+                  className="hover:text-primary transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Nossas Essências
+                </Link>
               </div>
             </div>
           )}

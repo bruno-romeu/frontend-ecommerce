@@ -26,6 +26,9 @@ export function Footer() {
               <Link href="/sobre" className="text-sm hover:text-primary transition-colors">
                 Sobre Nós
               </Link>
+              <Link href="/essencias" className="text-sm hover:text-primary transition-colors">
+                Nossas Essências
+              </Link>
               <Link href="/contato" className="text-sm hover:text-primary transition-colors">
                 Contato
               </Link>
