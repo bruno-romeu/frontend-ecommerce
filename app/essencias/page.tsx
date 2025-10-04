@@ -43,7 +43,7 @@ export default async function EssenciasPage() {
                   {essence.name}
                 </h2>
                 <p className="text-foreground whitespace-pre-line">
-                  {essence.description}
+                  {essence.description} | "Essência maravilhosa!"
                 </p>
               </div>
               {index < essences.length - 1 && <Separator className="mt-10" />}

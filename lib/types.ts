@@ -12,7 +12,7 @@ export interface Size {
 export interface Essence {
     id: number;
     name: string;
-    description: string;
+    description: string | null;
     is_active: boolean;
     image_url: string | null;
     order: number;
