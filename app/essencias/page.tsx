@@ -1,4 +1,4 @@
-"use client"; // Transforma em um Client Component
+"use client";
 
 import { useState, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
@@ -12,28 +12,31 @@ export default function EssenciasPage() {
 
   useEffect(() => {
     const getEssences = async () => {
+      const relativeUrl = '/product/essences/';
+      
+      const fullUrl = `${api}${relativeUrl}`;
+      console.log("Tentando buscar da URL:", fullUrl);
+
       try {
-        const apiUrl = `${api}product/essences/`;
-        console.log("Tentando buscar da URL:", apiUrl);
-
-        const response = await fetch(apiUrl, { cache: 'no-store' });
-
-        if (!response.ok) {
-          throw new Error(`A chamada à API falhou com o status: ${response.status}`);
-        }
+        const response = await api.get(relativeUrl);
         
-        const data = await response.json();
-        setEssences(data);
+        setEssences(response.data);
+
       } catch (err: any) {
         console.error("Erro detalhado ao buscar essências:", err);
-        setError(err.message);
+        
+        if (err.response) {
+          setError(`A chamada à API falhou com o status: ${err.response.status}`);
+        } else {
+          setError(err.message);
+        }
       } finally {
         setLoading(false);
       }
     };
 
     getEssences();
-  }, []); 
+  }, []);
 
   return (
     <div className="container mx-auto py-12 md:py-16">
