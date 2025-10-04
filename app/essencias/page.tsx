@@ -47,6 +47,7 @@ export default function EssenciasPage() {
         <p className="mt-4 text-lg text-foreground">
           Descubra as notas e sensações por trás de cada aroma que criamos. Nossas essências são selecionadas para transformar seu ambiente e despertar emoções.
         </p>
+        <hr />
       </div>
 
       <div className="max-w-3xl mx-auto mt-12 space-y-10">
@@ -67,7 +68,7 @@ export default function EssenciasPage() {
                     <h2 className="font-serif text-2xl font-semibold text-primary">
                       {essence.name}
                     </h2>
-                    <p className="text-foreground whitespace-pre-line">
+                    <p className="text-black whitespace-pre-line">
                       {essence.description}
                     </p>
                   </div>
