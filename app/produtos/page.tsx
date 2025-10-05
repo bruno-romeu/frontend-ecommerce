@@ -1,44 +1,64 @@
+"use client"
+
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { ProductsGrid } from "@/components/products-grid"
 import { ProductFilters } from "@/components/product-filters"
 import { Product } from "@/lib/types";
-import api from '@/lib/api' 
+import api from '@/lib/api'
 
-async function getProducts(): Promise<Product[]> {
-  try {
-    const response = await api.get('product/products/');
-    return response.data;
-  } catch (error) {
-    console.error("Falha ao buscar produtos:", error);
-    return []; 
-  }
-}
+function ProductsPageContent() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const searchParams = useSearchParams();
 
-export default async function ProductsPage() {
-  const products: Product[] = await getProducts();
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      try {
+        const params = new URLSearchParams(searchParams.toString());
+        const queryString = params.toString();
+        
+        console.log(`Buscando produtos com os filtros: /products/?${queryString}`);
+
+        const response = await api.get(`/products/?${queryString}`);
+        setProducts(response.data.results || response.data);
+      } catch (error) {
+        console.error("Falha ao buscar produtos:", error);
+        setProducts([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [searchParams]); 
 
   return (
-    <div className="min-h-screen">
-      <main className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">Todos os Produtos</h1>
-            <p className="text-lg text-foreground">
-              Descubra nossa coleção completa de velas artesanais e produtos aromáticos
-            </p>
-          </div>
-
-          <div className="flex flex-col lg:flex-row gap-8">
-            <aside className="lg:w-64 flex-shrink-0">
-              <ProductFilters />
-            </aside>
-
-            <div className="flex-1">
-              {}
-              <ProductsGrid products={products} />
-            </div>
-          </div>
-        </div>
-      </main>
+    <div className="container mx-auto py-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <aside className="md:col-span-1">
+          <ProductFilters />
+        </aside>
+        <main className="md:col-span-3">
+          {isLoading ? (
+            <p>A carregar produtos...</p> 
+          ) : products.length > 0 ? (
+            <ProductsGrid products={products} />
+          ) : (
+            <p>Nenhum produto encontrado com os filtros selecionados.</p>
+          )}
+        </main>
+      </div>
     </div>
-  )
+  );
+}
+
+
+export default function ProductsPage() {
+    return (
+        <Suspense fallback={<div>Carregando filtros...</div>}>
+            <ProductsPageContent />
+        </Suspense>
+    )
 }
