@@ -21,7 +21,7 @@ function ProductsPageContent() {
         
         console.log(`Buscando produtos com os filtros: /products/?${queryString}`);
 
-        const response = await api.get(`/products/?${queryString}`);
+        const response = await api.get(`product/products/?${queryString}`);
         setProducts(response.data.results || response.data);
       } catch (error) {
         console.error("Falha ao buscar produtos:", error);
