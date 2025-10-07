@@ -1,65 +1,36 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { ProductCard } from "@/components/product-card"
+import { useState, useEffect } from "react";
+import api from "@/lib/api"; 
+import { Product } from "@/lib/types"; 
+import { ProductCard } from "@/components/product-card";
 
 interface SearchResultsProps {
-  query: string
-}
-
-// Mock search function
-const searchProducts = (query: string) => {
-  const allProducts = [
-    {
-      id: 1,
-      name: "Vela Lavanda Francesa",
-      price: 89.9,
-      image: "/luxury-lavender-candle-in-glass-jar-with-purple-wa.jpg",
-      rating: 4.8,
-    },
-    {
-      id: 2,
-      name: "Difusor Vanilla & Amber",
-      price: 129.9,
-      image: "/elegant-reed-diffuser-with-vanilla-amber-scent-in-.jpg",
-      rating: 4.9,
-    },
-    {
-      id: 3,
-      name: "Vela Eucalipto & Menta",
-      price: 79.9,
-      image: "/eucalyptus-mint-candle-in-frosted-glass-jar-with-g.jpg",
-      rating: 4.7,
-    },
-    {
-      id: 4,
-      name: "Home Spray Citrus Fresh",
-      price: 59.9,
-      image: "/citrus-fresh-home-spray-in-sleek-white-bottle-with.jpg",
-      rating: 4.8,
-    },
-  ]
-
-  if (!query) return allProducts
-
-  return allProducts.filter((product) => product.name.toLowerCase().includes(query.toLowerCase()))
+  query: string;
 }
 
 export function SearchResults({ query }: SearchResultsProps) {
-  const [results, setResults] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [results, setResults] = useState<Product[]>([]); 
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setIsLoading(true)
-    // Mock API delay
-    const timer = setTimeout(() => {
-      const searchResults = searchProducts(query)
-      setResults(searchResults)
-      setIsLoading(false)
-    }, 500)
+    const fetchResults = async () => {
+      setIsLoading(true);
+      try {
+        const response = await api.get('/product/products/', {
+          params: { search: query }, 
+        });
+        setResults(response.data.results || response.data);
+      } catch (error) {
+        console.error("Falha ao buscar resultados da pesquisa:", error);
+        setResults([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    return () => clearTimeout(timer)
-  }, [query])
+    fetchResults();
+  }, [query]); 
 
   if (isLoading) {
     return (
@@ -67,7 +38,7 @@ export function SearchResults({ query }: SearchResultsProps) {
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
         <p className="text-muted-foreground">Buscando produtos...</p>
       </div>
-    )
+    );
   }
 
   if (results.length === 0) {
@@ -77,7 +48,7 @@ export function SearchResults({ query }: SearchResultsProps) {
         <p className="text-muted-foreground mb-8">Não encontramos produtos que correspondam à sua busca "{query}".</p>
         <p className="text-muted-foreground">Tente usar palavras-chave diferentes ou navegue por nossas categorias.</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -94,5 +65,5 @@ export function SearchResults({ query }: SearchResultsProps) {
         ))}
       </div>
     </div>
-  )
+  );
 }
