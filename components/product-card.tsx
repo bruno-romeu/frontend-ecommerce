@@ -8,7 +8,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="relative group">
-      <Link href={`/produto/${product.slug || product.id}`} className="absolute inset-0 z-10">
+      <Link href={`/produtos/${product.slug || product.id}`} className="absolute inset-0 z-10">
         <span className="sr-only">Ver produto</span>
       </Link>
       <img
@@ -24,7 +24,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <p className="text-sm text-gray-500 dark:text-gray-400">{product.category}</p>
         )}
         <h4 className="font-bold text-xl mt-2">
-          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price)}
+          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(parseFloat(product.price))}
         </h4>
       </div>
     </div>
