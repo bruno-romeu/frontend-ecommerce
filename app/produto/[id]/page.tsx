@@ -16,9 +16,16 @@ interface ProductPageProps {
 
 async function getProductData(slug: string): Promise<{product: Product; available_options: AvailableOptions} | null> {
   try {
-    const response = await api.get(`product/products/${slug}/`);
-    console.log("DADOS RECEBIDOS DA API:", response.data); 
-    return response.data;
+    const url = `${api}product/products/${slug}/`;
+    console.log("Buscando produto da URL:", url); 
+    const response = await fetch(url, { next: { revalidate: 3600 } }); 
+
+    if (!response.ok) {
+      console.error(`API retornou status ${response.status} para a URL: ${url}`);
+      return null;
+    }
+    
+    return response.json();
   } catch (error) {
     console.error(`Falha ao buscar produto com SLUG ${slug}:`, error);
     return null;
