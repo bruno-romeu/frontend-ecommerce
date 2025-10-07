@@ -6,59 +6,41 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search } from "lucide-react"
 import Link from "next/link"
+import api from "@/lib/api"
+import { Product } from "@/lib/types" 
 
 interface SearchModalProps {
   isOpen: boolean
   onClose: () => void
 }
 
-// Mock search results
-const mockProducts = [
-  {
-    id: 1,
-    name: "Vela Lavanda Francesa",
-    price: 89.9,
-    image: "/luxury-lavender-candle-in-glass-jar-with-purple-wa.jpg",
-  },
-  {
-    id: 2,
-    name: "Difusor Vanilla & Amber",
-    price: 129.9,
-    image: "/elegant-reed-diffuser-with-vanilla-amber-scent-in-.jpg",
-  },
-  {
-    id: 3,
-    name: "Vela Eucalipto & Menta",
-    price: 79.9,
-    image: "/eucalyptus-mint-candle-in-frosted-glass-jar-with-g.jpg",
-  },
-  {
-    id: 4,
-    name: "Home Spray Citrus Fresh",
-    price: 59.9,
-    image: "/citrus-fresh-home-spray-in-sleek-white-bottle-with.jpg",
-  },
-]
-
 export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [searchQuery, setSearchQuery] = useState("")
-  const [searchResults, setSearchResults] = useState<typeof mockProducts>([])
+  const [searchResults, setSearchResults] = useState<Product[]>([]) 
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    if (searchQuery.length > 2) {
-      setIsLoading(true)
-      // Mock search delay
-      const timer = setTimeout(() => {
-        const results = mockProducts.filter((product) => product.name.toLowerCase().includes(searchQuery.toLowerCase()))
-        setSearchResults(results)
-        setIsLoading(false)
-      }, 300)
-
-      return () => clearTimeout(timer)
-    } else {
+    if (searchQuery.length < 3) {
       setSearchResults([])
+      return
     }
+
+    setIsLoading(true)
+    const timer = setTimeout(async () => {
+      try {
+        const response = await api.get('/product/products/', {
+          params: { search: searchQuery },
+        });
+        setSearchResults(response.data.results || response.data);
+      } catch (error) {
+        console.error("Falha na busca de produtos:", error)
+        setSearchResults([])
+      } finally {
+        setIsLoading(false)
+      }
+    }, 300)
+
+    return () => clearTimeout(timer)
   }, [searchQuery])
 
   const handleClose = () => {
@@ -76,7 +58,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
         <div className="space-y-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-foreground" />
             <Input
               placeholder="Digite o nome do produto..."
               value={searchQuery}
@@ -86,16 +68,10 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
             />
           </div>
 
-          {isLoading && (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">Buscando produtos...</p>
-            </div>
-          )}
-
+          {isLoading && <p className="text-center text-foreground py-8">Buscando produtos...</p>}
+          
           {searchQuery.length > 2 && !isLoading && searchResults.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">Nenhum produto encontrado para "{searchQuery}"</p>
-            </div>
+            <p className="text-center text-foreground py-8">Nenhum produto encontrado para "{searchQuery}"</p>
           )}
 
           {searchResults.length > 0 && (
@@ -103,9 +79,9 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
               {searchResults.map((product) => (
                 <Link
                   key={product.id}
-                  href={`/produto/${product.id}`}
+                  href={`/produtos/${product.slug}`}
                   onClick={handleClose}
-                  className="flex items-center space-x-3 p-3 hover:bg-muted rounded-lg transition-colors"
+                  className="flex items-center space-x-3 p-3 hover:bg rounded-lg transition-colors"
                 >
                   <img
                     src={product.image || "/placeholder.svg"}
@@ -114,7 +90,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   />
                   <div className="flex-1">
                     <h4 className="font-medium">{product.name}</h4>
-                    <p className="text-sm text-muted-foreground">R$ {product.price.toFixed(2).replace(".", ",")}</p>
+                    <p className="text-sm text-foreground">R$ {parseFloat(product.price).toFixed(2).replace(".", ",")}</p>
                   </div>
                 </Link>
               ))}
@@ -123,7 +99,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
           {searchQuery.length > 2 && (
             <div className="border-t pt-4">
-              <Link href={`/busca?q=${encodeURIComponent(searchQuery)}`} onClick={handleClose}>
+              <Link href={`/produtos?search=${encodeURIComponent(searchQuery)}`} onClick={handleClose}>
                 <Button variant="outline" className="w-full bg-transparent">
                   Ver todos os resultados para "{searchQuery}"
                 </Button>
