@@ -79,7 +79,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
               {searchResults.map((product) => (
                 <Link
                   key={product.id}
-                  href={`/produtos/${product.slug}`}
+                  href={`/produto/${product.slug}`}
                   onClick={handleClose}
                   className="flex items-center space-x-3 p-3 hover:bg rounded-lg transition-colors"
                 >
