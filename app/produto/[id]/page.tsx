@@ -10,23 +10,23 @@ import { Product, AvailableOptions } from '@/lib/types'
 
 interface ProductPageProps {
   params: {
-    id: string; 
+    slug: string; 
   }
 }
 
-async function getProductData(id: string): Promise<{product: Product; available_options: AvailableOptions} | null> {
+async function getProductData(slug: string): Promise<{product: Product; available_options: AvailableOptions} | null> {
   try {
-    const response = await api.get(`product/products/${id}/`);
+    const response = await api.get(`product/products/${slug}/`);
     console.log("DADOS RECEBIDOS DA API:", response.data); 
     return response.data;
   } catch (error) {
-    console.error(`Falha ao buscar produto com ID ${id}:`, error);
+    console.error(`Falha ao buscar produto com SLUG ${slug}:`, error);
     return null;
   }
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const data = await getProductData(params.id);
+  const data = await getProductData(params.slug);
 
   if (!data) {
     notFound();
