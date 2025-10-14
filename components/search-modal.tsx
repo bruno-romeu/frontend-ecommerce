@@ -84,7 +84,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   className="flex items-center space-x-3 p-3 hover:bg rounded-lg transition-colors"
                 >
                   <img
-                    src={product.image || "/placeholder.svg"}
+                    src={product.image ||"/placeholder.svg"}
                     alt={product.name}
                     className="w-12 h-12 object-cover rounded"
                   />

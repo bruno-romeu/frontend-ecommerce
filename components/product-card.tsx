@@ -13,7 +13,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <span className="sr-only">Ver produto</span>
       </Link>
       <img
-        src={product.image || "/placeholder.svg"}
+        src={product.image ||"/placeholder.svg"}
         alt={product.name}
         width={400}
         height={500}
