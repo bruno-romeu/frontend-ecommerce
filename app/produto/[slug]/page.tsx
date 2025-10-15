@@ -16,7 +16,7 @@ interface ProductPageProps {
 
 async function getProductData(slug: string): Promise<{product: Product; available_options: AvailableOptions} | null> {
   try {
-    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/products/${slug}/`;
+    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}product/products/${slug}/`;
     console.log("Buscando produto da URL:", url); 
     
     const response = await fetch(url, { next: { revalidate: 3600 } }); 
