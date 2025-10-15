@@ -16,22 +16,40 @@ async function getProductData(slug: string): Promise<{product: Product; availabl
   try {
     const encodedSlug = encodeURIComponent(slug);
     const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/products/${encodedSlug}/`;
-    const response = await fetch(url, { next: { revalidate: 3600 } });
 
-    if (!response.ok) { return null; }
+    console.log('[ProductPage] Fetching product with slug:', slug);
+    console.log('[ProductPage] API URL:', url);
 
-    return response.json();
+    const response = await fetch(url, {
+      next: { revalidate: 3600 },
+      cache: 'no-store' // Desabilitar cache temporariamente para debug
+    });
+
+    console.log('[ProductPage] Response status:', response.status);
+
+    if (!response.ok) {
+      console.error('[ProductPage] Response not OK:', response.status, response.statusText);
+      return null;
+    }
+
+    const data = await response.json();
+    console.log('[ProductPage] Product data received:', data);
+    return data;
   } catch (error) {
-    console.error(`Falha ao buscar produto com SLUG ${slug}:`, error);
+    console.error(`[ProductPage] Falha ao buscar produto com SLUG ${slug}:`, error);
     return null;
   }
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
+  console.log('[ProductPage] Raw params:', params);
   const { slug } = await params;
+  console.log('[ProductPage] Extracted slug:', slug);
+
   const data = await getProductData(slug);
 
   if (!data || !data.product) {
+    console.error('[ProductPage] No data or product found, triggering notFound()');
     notFound();
   }
   
