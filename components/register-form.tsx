@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import { useRouter } from 'next/navigation';
-import { useAuth } from "@/context/AuthContext"; 
+import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -49,7 +49,7 @@ export function RegisterForm() {
     } else if (formData.password.length < 6) {
       newErrors.password = "A senha deve ter pelo menos 6 caracteres";
     }
-    if (formData.password2 !== formData.password2) {
+    if (formData.password2 !== formData.password) {
       newErrors.password2 = "As senhas não coincidem";
     }
     if (!formData.acceptTerms) {
@@ -104,126 +104,127 @@ export function RegisterForm() {
   };
 
   return (
-    <Card>
-      <CardHeader className="space-y-1">
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <Label htmlFor="name">Nome Completo</Label>
-            <Input
-              id="name"
-              placeholder="Seu nome completo"
-              value={formData.name}
-              onChange={(e) => handleInputChange("name", e.target.value)}
-              className={errors.name ? "border-destructive" : ""}
-            />
-            {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="email">E-mail</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="seu@email.com"
-              value={formData.email}
-              onChange={(e) => handleInputChange("email", e.target.value)}
-              className={errors.email ? "border-destructive" : ""}
-            />
-            {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="password">Senha</Label>
-            <div className="relative">
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Mínimo 6 caracteres"
-                value={formData.password}
-                onChange={(e) => handleInputChange("password", e.target.value)}
-                className={errors.password ? "border-destructive" : ""}
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </Button>
-            </div>
-            {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="password2">Confirmar Senha</Label>
-            <div className="relative">
-              <Input
-                id="password2"
-                type={showpassword2 ? "text" : "password"}
-                placeholder="Digite a senha novamente"
-                value={formData.password2}
-                onChange={(e) => handleInputChange("password2", e.target.value)}
-                className={errors.password2 ? "border-destructive" : ""}
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                onClick={() => setShowpassword2(!showpassword2)}
-              >
-                {showpassword2 ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </Button>
-            </div>
-            {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword}</p>}
-          </div>
-          <div className="space-y-1">
-            <div className="flex items-start space-x-2">
-              <Checkbox
-                id="terms"
-                checked={formData.acceptTerms}
-                onCheckedChange={(checked) => handleInputChange("acceptTerms", checked as boolean)}
-                className={errors.acceptTerms ? "border-destructive" : ""}
-              />
-              <Label htmlFor="terms" className="text-sm cursor-pointer leading-relaxed">
-                Aceito os{" "}
-                <Link href="/termos" className="text-primary hover:underline">
-                  termos de serviço
-                </Link>{" "}
-                e{" "}
-                <Link href="/privacidade" className="text-primary hover:underline">
-                  política de privacidade
-                </Link>
-              </Label>
-            </div>
-            {errors.acceptTerms && <p className="text-sm text-destructive">{errors.acceptTerms}</p>}
-            <div className="flex items-start space-x-2">
-              <Checkbox
-                id="newsletter"
-                checked={formData.newsletter}
-                onCheckedChange={(checked) => handleInputChange("newsletter", checked as boolean)}
-              />
-              <Label htmlFor="newsletter" className="text-sm cursor-pointer leading-relaxed">
-                Quero receber novidades e ofertas exclusivas por e-mail
-              </Label>
-            </div>
-          </div>
-          <Button
-            type="submit"
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-            disabled={isLoading}
-          >
-            {isLoading ? "Criando conta..." : "Criar Conta"}
-          </Button>
-          <div className="text-center text-sm text-muted-foreground">
-            Já tem uma conta?{" "}
-            <Link href="/login" className="text-primary hover:underline font-medium">
-              Entrar
-            </Link>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
-  )
+    <Card className="w-full max-w-md mx-auto shadow-lg">
+      <CardHeader className="pb-4">
+      </CardHeader>
+      <CardContent className="px-6 pb-6">
+        <form onSubmit={handleSubmit} className="space-y-3.5">
+          <div className="space-y-1.5">
+            <Label htmlFor="name" className="text-sm font-medium">Nome Completo</Label>
+            <Input
+              id="name"
+              placeholder="Seu nome completo"
+              value={formData.name}
+              onChange={(e) => handleInputChange("name", e.target.value)}
+              className={`h-10 ${errors.name ? "border-destructive" : ""}`}
+            />
+            {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="email" className="text-sm font-medium">E-mail</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="seu@email.com"
+              value={formData.email}
+              onChange={(e) => handleInputChange("email", e.target.value)}
+              className={`h-10 ${errors.email ? "border-destructive" : ""}`}
+            />
+            {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="password" className="text-sm font-medium">Senha</Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Mínimo 6 caracteres"
+                value={formData.password}
+                onChange={(e) => handleInputChange("password", e.target.value)}
+                className={`h-10 pr-10 ${errors.password ? "border-destructive" : ""}`}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-0 h-10 w-10 hover:bg-transparent"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
+            </div>
+            {errors.password && <p className="text-xs text-destructive mt-1">{errors.password}</p>}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="password2" className="text-sm font-medium">Confirmar Senha</Label>
+            <div className="relative">
+              <Input
+                id="password2"
+                type={showpassword2 ? "text" : "password"}
+                placeholder="Digite a senha novamente"
+                value={formData.password2}
+                onChange={(e) => handleInputChange("password2", e.target.value)}
+                className={`h-10 pr-10 ${errors.password2 ? "border-destructive" : ""}`}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-0 h-10 w-10 hover:bg-transparent"
+                onClick={() => setShowpassword2(!showpassword2)}
+              >
+                {showpassword2 ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
+            </div>
+            {errors.password2 && <p className="text-xs text-destructive mt-1">{errors.password2}</p>}
+          </div>
+          <div className="space-y-2 pt-1">
+            <div className="flex items-start space-x-2">
+              <Checkbox
+                id="terms"
+                checked={formData.acceptTerms}
+                onCheckedChange={(checked) => handleInputChange("acceptTerms", checked as boolean)}
+                className={`mt-0.5 ${errors.acceptTerms ? "border-destructive" : ""}`}
+              />
+              <Label htmlFor="terms" className="text-xs cursor-pointer leading-relaxed">
+                Aceito os{" "}
+                <Link href="/termos" className="text-primary hover:underline">
+                  termos de serviço
+                </Link>{" "}
+                e{" "}
+                <Link href="/privacidade" className="text-primary hover:underline">
+                  política de privacidade
+                </Link>
+              </Label>
+            </div>
+            {errors.acceptTerms && <p className="text-xs text-destructive">{errors.acceptTerms}</p>}
+            <div className="flex items-start space-x-2">
+              <Checkbox
+                id="newsletter"
+                checked={formData.newsletter}
+                onCheckedChange={(checked) => handleInputChange("newsletter", checked as boolean)}
+                className="mt-0.5"
+              />
+              <Label htmlFor="newsletter" className="text-xs cursor-pointer leading-relaxed">
+                Quero receber novidades e ofertas exclusivas por e-mail
+              </Label>
+            </div>
+          </div>
+          <Button
+            type="submit"
+            className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground font-medium mt-4"
+            disabled={isLoading}
+          >
+            {isLoading ? "Criando conta..." : "Criar Conta"}
+          </Button>
+          <div className="text-center text-xs text-muted-foreground pt-2">
+            Já tem uma conta?{" "}
+            <Link href="/login" className="text-primary hover:underline font-medium">
+              Entrar
+            </Link>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  )
 }
