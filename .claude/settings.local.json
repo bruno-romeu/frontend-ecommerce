@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Read(//c/Users/bruno/OneDrive/dev/ecommerce/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -7,18 +7,19 @@ import Link  from "next/link"
 import { Product, AvailableOptions } from '@/lib/types'
 
 interface ProductPageProps {
-  params: {
-    slug: string; 
-  }
+  params: Promise<{
+    slug: string;
+  }>
 } 
 
 async function getProductData(slug: string): Promise<{product: Product; available_options: AvailableOptions} | null> {
   try {
-    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/products/${slug}/`;
+    const encodedSlug = encodeURIComponent(slug);
+    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/products/${encodedSlug}/`;
     const response = await fetch(url, { next: { revalidate: 3600 } });
 
     if (!response.ok) { return null; }
-    
+
     return response.json();
   } catch (error) {
     console.error(`Falha ao buscar produto com SLUG ${slug}:`, error);
@@ -27,7 +28,8 @@ async function getProductData(slug: string): Promise<{product: Product; availabl
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const data = await getProductData(params.slug);
+  const { slug } = await params;
+  const data = await getProductData(slug);
 
   if (!data || !data.product) {
     notFound();

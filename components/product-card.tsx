@@ -6,7 +6,6 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  console.log("ProductCard está a renderizar o link para o slug:", product.slug); 
   return (
     <div className="relative group">
       <Link href={`/produto/${product.slug}`} className="absolute inset-0 z-10">
