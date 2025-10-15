@@ -4,27 +4,20 @@ import { ProductTabs } from "@/components/product-tabs"
 import { RelatedProducts } from "@/components/related-products"
 import { notFound } from "next/navigation"
 import Link  from "next/link"
-import api from '@/lib/api'
-
 import { Product, AvailableOptions } from '@/lib/types'
 
 interface ProductPageProps {
   params: {
     slug: string; 
   }
-}
+} 
 
 async function getProductData(slug: string): Promise<{product: Product; available_options: AvailableOptions} | null> {
   try {
-    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}product/products/${slug}/`;
-    console.log("Buscando produto da URL:", url); 
-    
-    const response = await fetch(url, { next: { revalidate: 3600 } }); 
+    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/products/${slug}/`;
+    const response = await fetch(url, { next: { revalidate: 3600 } });
 
-    if (!response.ok) {
-      console.error(`API retornou status ${response.status} para a URL: ${url}`);
-      return null;
-    }
+    if (!response.ok) { return null; }
     
     return response.json();
   } catch (error) {
@@ -36,11 +29,13 @@ async function getProductData(slug: string): Promise<{product: Product; availabl
 export default async function ProductPage({ params }: ProductPageProps) {
   const data = await getProductData(params.slug);
 
-  if (!data) {
+  if (!data || !data.product) {
     notFound();
   }
+  
+  const { product, available_options: availableOptions } = data;
 
-  const {product, available_options: availableOptions} = data
+
   
   const galleryImages = product.image ? [product.image] : [];
 
