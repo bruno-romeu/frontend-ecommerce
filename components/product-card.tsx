@@ -16,14 +16,14 @@ export function ProductCard({ product }: ProductCardProps) {
         alt={product.name}
         width={400}
         height={500}
-        className="w-full h-[350px] object-cover rounded-lg group-hover:opacity-80 transition-opacity"
+        className="w-full h-[280px] sm:h-[320px] md:h-[350px] object-cover rounded-lg group-hover:opacity-80 transition-opacity"
       />
-      <div className="p-4 bg-white dark:bg-gray-950 rounded-b-lg">
-        <h3 className="font-semibold text-lg">{product.name}</h3>
+      <div className="p-3 sm:p-4 bg-white dark:bg-gray-950 rounded-b-lg">
+        <h3 className="font-semibold text-base sm:text-lg truncate">{product.name}</h3>
         {product.category && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">{product.category}</p>
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">{product.category}</p>
         )}
-        <h4 className="font-bold text-xl mt-2">
+        <h4 className="font-bold text-lg sm:text-xl mt-1 sm:mt-2">
           {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(parseFloat(product.price))}
         </h4>
       </div>

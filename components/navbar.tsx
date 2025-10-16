@@ -61,7 +61,7 @@ export function Navbar() {
                     {categories.map((category) => (
                       <Link
                         key={category.id}
-                        href={`/produtos?categoria=${category.slug}`}
+                        href={`/produtos?category=${category.slug}`} 
                         className="block px-4 py-2 text-sm text-foreground hover:bg-muted hover:text-muted-foreground"
                       >
                         {category.name}
@@ -107,37 +107,19 @@ export function Navbar() {
                   Todos os Produtos
                 </Link>
                 <div className="space-y-2 pl-4">
-                  <Link
-                    href="/produtos?categoria=velas-aromaticas"
-                    className="block hover:text-primary transition-colors text-sm"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Velas Aromáticas
-                  </Link>
-                  <Link
-                    href="/produtos?categoria=difusores"
-                    className="block hover:text-primary transition-colors text-sm"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Difusores
-                  </Link>
-                  <Link
-                    href="/produtos?categoria=home-sprays"
-                    className="block hover:text-primary transition-colors text-sm"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Home Sprays
-                  </Link>
-                  <Link
-                    href="/produtos?categoria=kits-presente"
-                    className="block hover:text-primary transition-colors text-sm"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Kits Presente
-                  </Link>
+                  {categories.map((category) => (
+                    <Link
+                      key={category.id}
+                      href={`/produtos?category=${category.slug}`}
+                      className="block hover:text-primary transition-colors text-sm"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {category.name}
+                    </Link>
+                  ))}
                 </div>
-                <Link 
-                  href="/essencias" 
+                <Link
+                  href="/essencias"
                   className="hover:text-primary transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >

@@ -11,26 +11,25 @@ interface ProfileSidebarProps {
 export function ProfileSidebar({ activeTab, onTabChange, onLogout }: ProfileSidebarProps) {
   return (
     <aside className="md:col-span-1">
-      <nav className="flex flex-col space-y-2">
+      <nav className="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0">
         <Button
           variant={activeTab === 'dados' ? 'default' : 'ghost'}
           onClick={() => onTabChange('dados')}
-          className="justify-start"
+          className="justify-start whitespace-nowrap flex-shrink-0 md:flex-shrink text-sm sm:text-base"
         >
           <User className="mr-2 h-4 w-4" /> Meus Dados
         </Button>
         <Button
           variant={activeTab === 'pedidos' ? 'default' : 'ghost'}
           onClick={() => onTabChange('pedidos')}
-          className="justify-start"
+          className="justify-start whitespace-nowrap flex-shrink-0 md:flex-shrink text-sm sm:text-base"
         >
-          {/* Pode usar outro ícone se preferir, como ListOrdered */}
-          <User className="mr-2 h-4 w-4" /> Meus Pedidos 
+          <User className="mr-2 h-4 w-4" /> Meus Pedidos
         </Button>
-        <Button 
-          variant="ghost" 
-          onClick={onLogout} 
-          className="justify-start text-red-500 hover:text-red-600"
+        <Button
+          variant="ghost"
+          onClick={onLogout}
+          className="justify-start text-red-500 hover:text-red-600 whitespace-nowrap flex-shrink-0 md:flex-shrink text-sm sm:text-base"
         >
           <LogOut className="mr-2 h-4 w-4" /> Sair
         </Button>

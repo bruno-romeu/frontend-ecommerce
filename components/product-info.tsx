@@ -39,16 +39,14 @@ export function ProductInfo({ product, availableOptions }: ProductInfoProps) {
   const hasStock = product.stock !== undefined && product.stock_quantity > 0;
 
   return (
-    <div className="space-y-6">
-      <h1 className="font-serif text-3xl md:text-4xl font-bold">{product.name}</h1>
+    <div className="space-y-4 sm:space-y-6">
+      <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold leading-tight">{product.name}</h1>
       
-      {/* ... (código de avaliação e preço continua o mesmo) ... */}
-
-      <p className="text-3xl font-bold text-foreground">
+      <p className="text-2xl sm:text-3xl font-bold text-foreground">
         {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price)}
       </p>
 
-      {product.short_description && <p className="text-black">{product.short_description}</p>}
+      {product.short_description && <p className="text-sm sm:text-base text-black">{product.short_description}</p>}
 
       {/* Status do Estoque */}
       <div className="text-sm font-medium">
@@ -100,17 +98,17 @@ export function ProductInfo({ product, availableOptions }: ProductInfoProps) {
       <div>
         <label className="block text-sm font-medium text-foreground mb-2">Quantidade</label>
         <div className="flex items-center space-x-3">
-          <Button variant="outline" size="icon" onClick={decreaseQuantity} disabled={quantity <= 1}><Minus className="h-4 w-4" /></Button>
-          <span className="text-lg font-medium w-12 text-center">{quantity}</span>
-          <Button variant="outline" size="icon" onClick={increaseQuantity} ><Plus className="h-4 w-4" /></Button>
+          <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10" onClick={decreaseQuantity} disabled={quantity <= 1}><Minus className="h-4 w-4" /></Button>
+          <span className="text-base sm:text-lg font-medium w-12 text-center">{quantity}</span>
+          <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10" onClick={increaseQuantity} ><Plus className="h-4 w-4" /></Button>
         </div>
       </div>
-      
-      <Button 
-      size="lg" 
-      className="w-full bg-accent hover:bg-accent-hover text-foreground cursro-pointer" 
-      onClick={handleAddToCart} 
-      disabled={!hasStock || loading} 
+
+      <Button
+      size="lg"
+      className="w-full bg-accent hover:bg-accent-hover text-foreground text-sm sm:text-base cursor-pointer"
+      onClick={handleAddToCart}
+      disabled={!hasStock || loading}
     >
       {loading ? 'Adicionando...' : 'Adicionar ao Carrinho'}
     </Button>

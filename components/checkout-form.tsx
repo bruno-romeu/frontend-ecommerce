@@ -58,10 +58,10 @@ export function CheckoutForm({ formData, setFormData, onCepBlur}: CheckoutFormPr
   };
 
   return (
-    <div className="bg-card border border-border rounded-lg p-6 space-y-6">
+    <div className="bg-card border border-border rounded-lg p-4 sm:p-6 space-y-4 sm:space-y-6">
       <div>
-        <h2 className="text-xl font-semibold font-serif">Informações de Contato</h2>
-        <p className="text-sm text-muted-foreground mt-1">Para quem enviaremos a confirmação do pedido.</p>
+        <h2 className="text-lg sm:text-xl font-semibold font-serif">Informações de Contato</h2>
+        <p className="text-xs sm:text-sm text-muted-foreground mt-1">Para quem enviaremos a confirmação do pedido.</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
@@ -85,8 +85,8 @@ export function CheckoutForm({ formData, setFormData, onCepBlur}: CheckoutFormPr
       <Separator />
 
       <div>
-        <h2 className="text-xl font-semibold font-serif">Endereço de Entrega</h2>
-        <p className="text-sm text-muted-foreground mt-1">Onde você quer receber sua encomenda.</p>
+        <h2 className="text-lg sm:text-xl font-semibold font-serif">Endereço de Entrega</h2>
+        <p className="text-xs sm:text-sm text-muted-foreground mt-1">Onde você quer receber sua encomenda.</p>
       </div>
       <div className="space-y-4">
         <div className="space-y-2">
@@ -112,8 +112,8 @@ export function CheckoutForm({ formData, setFormData, onCepBlur}: CheckoutFormPr
           <Label htmlFor="neighborhood">Bairro</Label>
           <Input id="neighborhood" name="neighborhood" value={formData.neighborhood} onChange={handleChange} placeholder="Seu bairro" required />
         </div>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-2 space-y-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="sm:col-span-2 space-y-2">
             <Label htmlFor="city">Cidade</Label>
             <Input id="city" name="city" value={formData.city} onChange={handleChange} placeholder="Sua cidade" required />
           </div>

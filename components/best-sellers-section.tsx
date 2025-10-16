@@ -44,16 +44,16 @@ export function BestSellersSection() {
   const visibleProducts = products.slice(currentIndex, currentIndex + itemsPerView)
 
   return (
-    <section className="py-16 px-4 bg-card">
+    <section className="py-12 sm:py-16 px-4 bg-card">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-12">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 sm:mb-12 gap-4">
           <div>
-            <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">Mais Vendidos</h2>
-            <p className="text-lg text-foreground">Os produtos favoritos dos nossos clientes</p>
+            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2 sm:mb-4">Mais Vendidos</h2>
+            <p className="text-sm sm:text-base md:text-lg text-foreground">Os produtos favoritos dos nossos clientes</p>
           </div>
 
-          {/* Os botões usam a 'products.length' */}
-          <div className="hidden md:flex space-x-2">
+          {/* Botões de navegação para desktop */}
+          <div className="hidden lg:flex space-x-2">
             <Button variant="outline" size="icon" onClick={prevSlide} disabled={currentIndex === 0}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -68,16 +68,26 @@ export function BestSellersSection() {
           </div>
         </div>
 
-        {/* O grid renderiza os produtos do estado 'visibleProducts' */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Grid responsivo */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {visibleProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
 
-        {/* Navegação mobile também usa 'products.length' */}
-        <div className="flex justify-center space-x-2 mt-8 md:hidden">
-          {/* ... (botões mobile) ... */}
+        {/* Navegação mobile com botões */}
+        <div className="flex justify-center space-x-2 mt-6 sm:mt-8 lg:hidden">
+          <Button variant="outline" size="sm" onClick={prevSlide} disabled={currentIndex === 0}>
+            <ChevronLeft className="h-4 w-4 mr-1" /> Anterior
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={nextSlide}
+            disabled={currentIndex + itemsPerView >= products.length}
+          >
+            Próximo <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
         </div>
       </div>
     </section>

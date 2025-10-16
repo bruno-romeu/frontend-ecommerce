@@ -35,18 +35,19 @@ function ProductsPageContent() {
   }, [searchParams]); 
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <h1 className="text-2xl sm:text-3xl font-bold font-serif mb-6 sm:mb-8">Produtos</h1>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8">
         <aside className="md:col-span-1">
           <ProductFilters />
         </aside>
         <main className="md:col-span-3">
           {isLoading ? (
-            <p>A carregar produtos...</p> 
+            <p className="text-center text-muted-foreground">A carregar produtos...</p>
           ) : products.length > 0 ? (
             <ProductsGrid products={products} />
           ) : (
-            <p>Nenhum produto encontrado com os filtros selecionados.</p>
+            <p className="text-center text-muted-foreground">Nenhum produto encontrado com os filtros selecionados.</p>
           )}
         </main>
       </div>
