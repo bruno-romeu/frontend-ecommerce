@@ -27,7 +27,7 @@ export function HeroSection() {
           throw new Error('NEXT_PUBLIC_API_URL não configurada')
         }
 
-        const response = await fetch(`${apiUrl}/api/hero/`, {
+        const response = await fetch(`${apiUrl}/site-config/hero/`, {
           cache: 'no-store',
         })
 
