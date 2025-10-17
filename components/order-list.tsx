@@ -312,7 +312,7 @@ export function OrdersList({ orders = [], onCancel }: OrdersListProps) {
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
             <Package className="w-12 h-12 text-muted-foreground mb-3" />
-            <p className="text-muted-foreground text-sm">
+            <p className="text-foreground text-sm">
               {orders.length === 0
                 ? "Você não tem pedidos ainda"
                 : "Nenhum pedido encontrado neste filtro"}
