@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "./ui/input";
 import { AddressCard } from "./address-card";
+import { OrdersList } from "./order-list";
 import api from "@/lib/api";
-import { Value } from "@radix-ui/react-select";
 
 interface UserProfile {
   first_name: string;
@@ -36,6 +36,42 @@ interface Address {
   complement?: string;
 }
 
+interface OrderItem {
+  id: number;
+  product: {
+    id: number;
+    name: string;
+    price: number;
+  };
+  quantity: number;
+  price: number;
+}
+
+interface ShippingInfo {
+  id: number;
+  tracking_code?: string;
+  carrier?: string;
+  estimated_delivery?: string;
+  status: string;
+}
+
+interface PaymentInfo {
+  id: number;
+  method: string;
+  status: string;
+  paid_at?: string;
+}
+
+interface Order {
+  id: number;
+  status: string;
+  total: string;
+  created_at: string;
+  items: OrderItem[];
+  shipping?: ShippingInfo;
+  payment?: PaymentInfo;
+}
+
 interface ProfileContentProps {
   activeTab: string;
   profile: UserProfile;
@@ -44,11 +80,21 @@ interface ProfileContentProps {
   onAddressUpdate: (updateAddress: Address) => void;
 }
 
-export function ProfileContent({ activeTab, profile, addresses, onProfileUpdate, onAddressUpdate }: ProfileContentProps) {
+export function ProfileContent({
+  activeTab,
+  profile,
+  addresses,
+  onProfileUpdate,
+  onAddressUpdate,
+}: ProfileContentProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState<EditFormData>({name: ''});
+  const [editData, setEditData] = useState<EditFormData>({ name: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [ordersError, setOrdersError] = useState("");
 
   useEffect(() => {
     setEditData({
@@ -57,45 +103,83 @@ export function ProfileContent({ activeTab, profile, addresses, onProfileUpdate,
       phone_number: profile.phone_number || "",
       birthday: profile.birthday || "",
     });
-  },
-  [profile, isEditing]
-  );
+  }, [profile, isEditing]);
+
+  useEffect(() => {
+    if (activeTab === "pedidos") {
+      fetchOrders();
+    }
+  }, [activeTab]);
+
+  const fetchOrders = async () => {
+    setOrdersLoading(true);
+    setOrdersError("");
+    try {
+      const response = await api.get("order/order-list/");
+      setOrders(response.data);
+    } catch (error: any) {
+      console.error("Erro ao carregar pedidos:", error);
+      setOrdersError("Falha ao carregar pedidos. Tente novamente.");
+    } finally {
+      setOrdersLoading(false);
+    }
+  };
+
+  const handleCancelOrder = async (orderId: number) => {
+    if (!window.confirm("Tem certeza que deseja cancelar este pedido?")) {
+      return;
+    }
+
+    try {
+      await api.patch(`order/order-cancel/${orderId}/`, {
+        status: "cancelled",
+      });
+      setOrders(
+        orders.map((o) =>
+          o.id === orderId ? { ...o, status: "cancelled" } : o
+        )
+      );
+    } catch (error: any) {
+      console.error("Erro ao cancelar pedido:", error);
+      alert("Não foi possível cancelar este pedido.");
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {name, value} = e.target;
-    setEditData(prev => ({...prev, [name]:value}));
+    const { name, value } = e.target;
+    setEditData((prev) => ({ ...prev, [name]: value }));
   };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    const {cpf, phone_number} = editData;
+    const { cpf, phone_number } = editData;
     if (cpf && cpf.trim() !== "") {
-      const cpfDigits = cpf.replace(/\D/g, '');
+      const cpfDigits = cpf.replace(/\D/g, "");
       if (cpfDigits.length !== 11) {
         newErrors.cpf = "O CPF deve conter 11 digitos.";
       }
     }
 
     if (phone_number && phone_number.trim() !== "") {
-      const phoneDigits = phone_number.replace(/\D/g, '')
-      if(phoneDigits.length < 10 || phoneDigits.length > 11) {
-        newErrors.phone_number = "O telefone deve conter 10 ou 11 dígitos (com DDD)."
+      const phoneDigits = phone_number.replace(/\D/g, "");
+      if (phoneDigits.length < 10 || phoneDigits.length > 11) {
+        newErrors.phone_number = "O telefone deve conter 10 ou 11 dígitos (com DDD).";
       }
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }
+  };
 
-  const handleSave = async() => {
+  const handleSave = async () => {
     if (!validateForm()) {
-      return
+      return;
     }
     setIsLoading(true);
     setErrors({});
 
-    const nameParts = editData.name.trim().split(' ');
+    const nameParts = editData.name.trim().split(" ");
     const firstName = nameParts[0];
-    const lastName = nameParts.slice(1).join(' ');
+    const lastName = nameParts.slice(1).join(" ");
 
     const payload = {
       first_name: firstName,
@@ -106,16 +190,16 @@ export function ProfileContent({ activeTab, profile, addresses, onProfileUpdate,
     };
 
     try {
-      const response = await api.patch('/client/profile/', payload);
+      const response = await api.patch("/client/profile/", payload);
       onProfileUpdate(response.data);
       setIsEditing(false);
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Falha ao atualizar dados do perfil: ", error);
 
       if (error.response && error.response.data) {
         setErrors(error.response.data);
       } else {
-        setErrors({form: "Ocorreu um erro inesperado."})
+        setErrors({ form: "Ocorreu um erro inesperado." });
       }
     } finally {
       setIsLoading(false);
@@ -128,20 +212,32 @@ export function ProfileContent({ activeTab, profile, addresses, onProfileUpdate,
 
   return (
     <main className="md:col-span-3">
-      {activeTab === 'dados' && (
+      {activeTab === "dados" && (
         <div className="space-y-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle>Informações Pessoais</CardTitle>
-              <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>Editar</Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsEditing(true)}
+              >
+                Editar
+              </Button>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-sm pt-4">
               <div className="space-y-1 md:col-span-2">
                 <Label className="text-foreground">Nome Completo</Label>
                 {isEditing ? (
-                  <Input name="name" value={editData.name} onChange={handleInputChange} />
+                  <Input
+                    name="name"
+                    value={editData.name}
+                    onChange={handleInputChange}
+                  />
                 ) : (
-                  <p className="font-medium">{profile.first_name} {profile.last_name}</p>
+                  <p className="font-medium">
+                    {profile.first_name} {profile.last_name}
+                  </p>
                 )}
               </div>
               <div className="space-y-1">
@@ -152,21 +248,42 @@ export function ProfileContent({ activeTab, profile, addresses, onProfileUpdate,
                 <Label className="text-foreground">Telefone</Label>
                 {isEditing ? (
                   <>
-                    <Input name="phone_number" maxLength={11} value={editData.phone_number || ""}
-                    onChange={handleInputChange} className={errors.phone_number ? "border-destructive" : ""} />
-                    {errors.phone_number && <p className="text-xs text-destructive">{errors.phone_number}</p>}
+                    <Input
+                      name="phone_number"
+                      maxLength={11}
+                      value={editData.phone_number || ""}
+                      onChange={handleInputChange}
+                      className={
+                        errors.phone_number ? "border-destructive" : ""
+                      }
+                    />
+                    {errors.phone_number && (
+                      <p className="text-xs text-destructive">
+                        {errors.phone_number}
+                      </p>
+                    )}
                   </>
                 ) : (
-                  <p className="font-medium">{profile.phone_number || "Não informado"}</p>
+                  <p className="font-medium">
+                    {profile.phone_number || "Não informado"}
+                  </p>
                 )}
               </div>
               <div className="space-y-1">
                 <Label className="text-foreground">CPF</Label>
                 {isEditing ? (
                   <>
-                    <Input name="cpf" placeholder="XXX.XXX.XXX-XX" maxLength={11} value={editData.cpf || ""}
-                    onChange={handleInputChange} className={errors.cpf ? "border-destructive" : ""} />
-                    {errors.cpf && <p className="text-xs text-destructive">{errors.cpf}</p>}
+                    <Input
+                      name="cpf"
+                      placeholder="XXX.XXX.XXX-XX"
+                      maxLength={11}
+                      value={editData.cpf || ""}
+                      onChange={handleInputChange}
+                      className={errors.cpf ? "border-destructive" : ""}
+                    />
+                    {errors.cpf && (
+                      <p className="text-xs text-destructive">{errors.cpf}</p>
+                    )}
                   </>
                 ) : (
                   <p className="font-medium">{profile.cpf || "Não informado"}</p>
@@ -175,16 +292,24 @@ export function ProfileContent({ activeTab, profile, addresses, onProfileUpdate,
               <div className="space-y-1">
                 <Label className="text-foreground">Data de Nascimento</Label>
                 {isEditing ? (
-                  <Input name="birthday" type="date" value={editData.birthday || ""}
-                  onChange={handleInputChange} />
+                  <Input
+                    name="birthday"
+                    type="date"
+                    value={editData.birthday || ""}
+                    onChange={handleInputChange}
+                  />
                 ) : (
-                  <p className="font-medium">{profile.birthday || "Não informado"}</p>
+                  <p className="font-medium">
+                    {profile.birthday || "Não informado"}
+                  </p>
                 )}
               </div>
 
               {isEditing && (
                 <div className="md:col-span-2 flex justify-end space-x-2 pt-4">
-                  <Button variant="ghost" onClick={handleCancel}>Cancelar</Button>
+                  <Button variant="ghost" onClick={handleCancel}>
+                    Cancelar
+                  </Button>
                   <Button onClick={handleSave} disabled={isLoading}>
                     {isLoading ? "A salvar..." : "Salvar Alterações"}
                   </Button>
@@ -193,21 +318,44 @@ export function ProfileContent({ activeTab, profile, addresses, onProfileUpdate,
             </CardContent>
           </Card>
 
-          {addresses.map(address => (
-            <AddressCard 
-              key={address.id} 
-              address={address} 
-              onUpdate={onAddressUpdate} 
+          {addresses.map((address) => (
+            <AddressCard
+              key={address.id}
+              address={address}
+              onUpdate={onAddressUpdate}
             />
           ))}
         </div>
       )}
 
-      {activeTab === 'pedidos' && (
-        <Card>
-          <CardHeader><CardTitle>Meus Pedidos</CardTitle></CardHeader>
-          <CardContent><p>A funcionalidade de histórico de pedidos será implementada em breve.</p></CardContent>
-        </Card>
+      {activeTab === "pedidos" && (
+        <div>
+          {ordersLoading ? (
+            <Card>
+              <CardContent className="flex justify-center py-12">
+                <p className="text-muted-foreground">
+                  Carregando pedidos...
+                </p>
+              </CardContent>
+            </Card>
+          ) : ordersError ? (
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardContent className="py-4">
+                <p className="text-destructive text-sm">{ordersError}</p>
+                <Button
+                  onClick={fetchOrders}
+                  size="sm"
+                  className="mt-2"
+                  variant="outline"
+                >
+                  Tentar Novamente
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <OrdersList orders={orders} onCancel={handleCancelOrder} />
+          )}
+        </div>
       )}
     </main>
   );
