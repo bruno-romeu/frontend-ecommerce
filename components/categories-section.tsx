@@ -1,6 +1,5 @@
 import Link from "next/link"
   import { Card, CardContent } from "@/components/ui/card"
-import api from '@/lib/api'
 
 interface Category{
   id: number;
@@ -11,14 +10,21 @@ interface Category{
 
 async function getCategories(): Promise<Category[]> {
   try {
-    const response = await api.get('product/categories/');
-    return response.data;
+    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/categories/`;
+    const response = await fetch(url, {
+      next: { revalidate: 3600 }, 
+    });
+
+    if (!response.ok) {
+      throw new Error("A resposta da rede não foi 'ok'");
+    }
+
+    return response.json();
   } catch (error) {
     console.error("Falha ao buscar categorias:", error);
     return [];
   }
 }
-
 export async function CategoriesSection() {
   const categories = await getCategories();
 
