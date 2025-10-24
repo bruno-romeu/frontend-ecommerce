@@ -41,15 +41,15 @@ interface OrderItem {
   product: {
     id: number;
     name: string;
-    price: number;
+    price: string | number;
   };
   quantity: number;
-  price: number;
+  price: string | number;
 }
 
 interface ShippingInfo {
   id: number;
-  tracking_code?: string;
+  tracking_code?: string | null;
   carrier?: string;
   estimated_delivery?: string;
   status: string;
@@ -65,7 +65,7 @@ interface PaymentInfo {
 interface Order {
   id: number;
   status: string;
-  total: string;
+  total: string | number;
   created_at: string;
   items: OrderItem[];
   shipping?: ShippingInfo;
@@ -116,7 +116,8 @@ export function ProfileContent({
     setOrdersError("");
     try {
       const response = await api.get("order/order-list/");
-      setOrders(response.data);
+      const ordersData = Array.isArray(response.data) ? response.data : [];
+      setOrders(orders);
     } catch (error: any) {
       console.error("Erro ao carregar pedidos:", error);
       setOrdersError("Falha ao carregar pedidos. Tente novamente.");
@@ -132,11 +133,11 @@ export function ProfileContent({
 
     try {
       await api.patch(`order/order-cancel/${orderId}/`, {
-        status: "cancelled",
+        status: "canceled",
       });
       setOrders(
         orders.map((o) =>
-          o.id === orderId ? { ...o, status: "cancelled" } : o
+          o.id === orderId ? { ...o, status: "canceled" } : o
         )
       );
     } catch (error: any) {
