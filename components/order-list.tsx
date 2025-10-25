@@ -10,14 +10,14 @@ import { Separator } from "@/components/ui/separator";
 interface Product {
   id: number;
   name: string;
-  price: number;
+  price: string | number;
 }
 
 interface OrderItem {
   id: number;
   product: Product;
   quantity: number;
-  price: number;
+  price: string | number;
 }
 
 interface ShippingInfo {
@@ -93,7 +93,7 @@ interface OrderCardProps {
 function OrderCard({ order, isExpanded, onToggle, onCancel, isCanceling }: OrderCardProps) {
   const config = statusConfig[order.status] || statusConfig.pending;
   const IconComponent = config.icon;
-  const itemCount = order.items.length;
+  const itemCount = order.items?.length || 0;
   const canCancel = ["pending", "paid"].includes(order.status);
   const total = typeof order.total === "string" 
     ? parseFloat(order.total).toFixed(2) 
@@ -107,7 +107,7 @@ function OrderCard({ order, isExpanded, onToggle, onCancel, isCanceling }: Order
   return (
     <Card className="bg-card border-border">
       <div
-        className="cursor-pointer p-4 sm:p-6 transition-colors hover:bg-muted/50"
+        className="cursor-pointer p-4 sm:p-6 transition-colors hover:bg-secondary/5"
         onClick={onToggle}
       >
         <div className="flex items-center justify-between gap-4">
@@ -120,7 +120,7 @@ function OrderCard({ order, isExpanded, onToggle, onCancel, isCanceling }: Order
                   {config.label}
                 </Badge>
               </div>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+              <p className="text-xs font-bold sm:text-sm text-muted mt-1">
                 {new Date(order.created_at).toLocaleDateString("pt-BR")} •{" "}
                 {itemCount} item{itemCount > 1 ? "s" : ""}
               </p>
@@ -146,36 +146,40 @@ function OrderCard({ order, isExpanded, onToggle, onCancel, isCanceling }: Order
             <div>
               <h4 className="font-semibold text-sm mb-3">Itens do Pedido</h4>
               <div className="space-y-2">
-                {order.items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex justify-between items-center text-xs sm:text-sm"
-                  >
-                    <span className="text-foreground">
-                      {item.quantity}x {item.product.name}
-                    </span>
-                    <span className="text-muted-foreground font-medium">
-                      R${" "}
-                      {(typeof item.price === "string" 
-                        ? parseFloat(item.price) 
-                        : item.price
-                      ).toFixed(2).replace(".", ",")}
-                    </span>
-                  </div>
-                ))}
+                {order.items && order.items.length > 0 ? (
+                  order.items.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex justify-between items-center text-xs sm:text-sm"
+                    >
+                      <span className="text-foreground font-semibold">
+                        {item.quantity}x {item.product.name}
+                      </span>
+                      <span className="text-sm font-bold">
+                        R${" "}
+                        {(typeof item.price === "string" 
+                          ? parseFloat(item.price) 
+                          : item.price
+                        ).toFixed(2).replace(".", ",")}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-xs text-foreground">Nenhum item encontrado</p>
+                )}
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               {order.payment && (
-                <div className="bg-muted/50 p-3 rounded-md border border-border">
-                  <p className="text-xs text-muted-foreground mb-1">
+                <div className="bg-secondary/5 p-3 rounded-md border border-border">
+                  <p className="text-xs text-foreground font-semibold mb-1">
                     Pagamento
                   </p>
-                  <p className="text-xs font-semibold text-foreground">
+                  <p className="text-xs font-semibold text-accent">
                     {order.payment.method}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-foreground font-normal mt-1">
                     {order.payment.status === "paid"
                       ? "Pago"
                       : "Aguardando"}
@@ -232,7 +236,7 @@ function OrderCard({ order, isExpanded, onToggle, onCancel, isCanceling }: Order
                   variant="outline"
                   size="sm"
                   disabled={isCanceling}
-                  className="flex-1 text-xs sm:text-sm text-destructive hover:text-destructive hover:bg-destructive/5"
+                  className="flex-1 text-xs sm:text-sm text-destructive hover:bg-destructive hover:text-white"
                   onClick={handleCancelClick}
                 >
                   {isCanceling ? "Cancelando..." : "Cancelar"}

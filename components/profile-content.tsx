@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "./ui/input";
 import { AddressCard } from "./address-card";
-import { OrdersList } from "./order-list";
+import { OrdersList, type Order } from "./order-list";
 import api from "@/lib/api";
 
 interface UserProfile {
@@ -36,41 +36,6 @@ interface Address {
   complement?: string;
 }
 
-interface OrderItem {
-  id: number;
-  product: {
-    id: number;
-    name: string;
-    price: string | number;
-  };
-  quantity: number;
-  price: string | number;
-}
-
-interface ShippingInfo {
-  id: number;
-  tracking_code?: string | null;
-  carrier?: string;
-  estimated_delivery?: string;
-  status: string;
-}
-
-interface PaymentInfo {
-  id: number;
-  method: string;
-  status: string;
-  paid_at?: string;
-}
-
-interface Order {
-  id: number;
-  status: string;
-  total: string | number;
-  created_at: string;
-  items: OrderItem[];
-  shipping?: ShippingInfo;
-  payment?: PaymentInfo;
-}
 
 interface ProfileContentProps {
   activeTab: string;
@@ -117,7 +82,7 @@ export function ProfileContent({
     try {
       const response = await api.get("order/order-list/");
       const ordersData = Array.isArray(response.data) ? response.data : [];
-      setOrders(orders);
+      setOrders(ordersData);
     } catch (error: any) {
       console.error("Erro ao carregar pedidos:", error);
       setOrdersError("Falha ao carregar pedidos. Tente novamente.");
