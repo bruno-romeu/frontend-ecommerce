@@ -8,6 +8,16 @@ import { Input } from "./ui/input";
 import { AddressCard } from "./address-card";
 import { OrdersList, type Order } from "./order-list";
 import api from "@/lib/api";
+import { Plus } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface UserProfile {
   first_name: string;
@@ -36,6 +46,20 @@ interface Address {
   complement?: string;
 }
 
+interface StateOption {
+  value: string;
+  label: string;
+}
+
+interface NewAddressData {
+  street: string;
+  number: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  zipcode: string;
+  complement?: string;
+}
 
 interface ProfileContentProps {
   activeTab: string;
@@ -57,6 +81,20 @@ export function ProfileContent({
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Estados para adicionar novo endereço
+  const [isAddingAddress, setIsAddingAddress] = useState(false);
+  const [newAddress, setNewAddress] = useState<NewAddressData>({
+    street: "",
+    number: "",
+    neighborhood: "",
+    city: "",
+    state: "",
+    zipcode: "",
+    complement: "",
+  });
+  const [states, setStates] = useState<StateOption[]>([]);
+  const [addressErrors, setAddressErrors] = useState<Record<string, string>>({});
+
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [ordersError, setOrdersError] = useState("");
@@ -75,6 +113,18 @@ export function ProfileContent({
       fetchOrders();
     }
   }, [activeTab]);
+
+  useEffect(() => {
+    const fetchStates = async () => {
+      try {
+        const response = await api.get('/client/utils/states/');
+        setStates(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar estados:", error);
+      }
+    };
+    fetchStates();
+  }, []);
 
   const fetchOrders = async () => {
     setOrdersLoading(true);
@@ -174,6 +224,140 @@ export function ProfileContent({
 
   const handleCancel = () => {
     setIsEditing(false);
+  };
+
+  // Função para verificar se o endereço é duplicado
+  const isDuplicateAddress = (newAddr: NewAddressData): boolean => {
+    return addresses.some(
+      (addr) =>
+        addr.street.toLowerCase() === newAddr.street.toLowerCase() &&
+        addr.number === newAddr.number &&
+        addr.neighborhood.toLowerCase() === newAddr.neighborhood.toLowerCase() &&
+        addr.city.toLowerCase() === newAddr.city.toLowerCase() &&
+        addr.state === newAddr.state &&
+        addr.zipcode.replace(/\D/g, "") === newAddr.zipcode.replace(/\D/g, "")
+    );
+  };
+
+  const handleAddressInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewAddress((prev) => ({ ...prev, [name]: value }));
+    // Limpar erro do campo quando o usuário começar a digitar
+    if (addressErrors[name]) {
+      setAddressErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+  };
+
+  const handleAddressStateChange = (value: string) => {
+    setNewAddress((prev) => ({ ...prev, state: value }));
+    if (addressErrors.state) {
+      setAddressErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.state;
+        return newErrors;
+      });
+    }
+  };
+
+  const handleCepBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const cep = e.target.value.replace(/\D/g, '');
+    if (cep.length !== 8) return;
+
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await response.json();
+      if (data.erro) {
+        console.error("CEP não encontrado.");
+        return;
+      }
+      setNewAddress(prev => ({
+        ...prev,
+        street: data.logradouro,
+        neighborhood: data.bairro,
+        city: data.localidade,
+        state: data.uf,
+      }));
+    } catch (error) {
+      console.error("Falha ao buscar CEP:", error);
+    }
+  };
+
+  const validateNewAddress = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (!newAddress.zipcode.trim()) {
+      newErrors.zipcode = "CEP é obrigatório";
+    } else if (newAddress.zipcode.replace(/\D/g, "").length !== 8) {
+      newErrors.zipcode = "CEP deve ter 8 dígitos";
+    }
+
+    if (!newAddress.street.trim()) {
+      newErrors.street = "Rua é obrigatória";
+    }
+
+    if (!newAddress.number.trim()) {
+      newErrors.number = "Número é obrigatório";
+    }
+
+    if (!newAddress.neighborhood.trim()) {
+      newErrors.neighborhood = "Bairro é obrigatório";
+    }
+
+    if (!newAddress.city.trim()) {
+      newErrors.city = "Cidade é obrigatória";
+    }
+
+    if (!newAddress.state.trim()) {
+      newErrors.state = "Estado é obrigatório";
+    }
+
+    // Verificar se é duplicado
+    if (Object.keys(newErrors).length === 0 && isDuplicateAddress(newAddress)) {
+      newErrors.form = "Este endereço já está cadastrado";
+    }
+
+    setAddressErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleAddAddress = async () => {
+    if (!validateNewAddress()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await api.post('/client/address/create/', newAddress);
+      
+      // Adicionar o novo endereço à lista
+      window.location.reload(); // Recarregar para atualizar a lista de endereços
+      
+      // Resetar formulário e fechar modal
+      setNewAddress({
+        street: "",
+        number: "",
+        neighborhood: "",
+        city: "",
+        state: "",
+        zipcode: "",
+        complement: "",
+      });
+      setIsAddingAddress(false);
+    } catch (error: any) {
+      console.error("Erro ao adicionar endereço:", error);
+      if (error.response && error.response.data) {
+        setAddressErrors(error.response.data);
+      } else {
+        setAddressErrors({ form: "Ocorreu um erro ao adicionar o endereço." });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -284,13 +468,182 @@ export function ProfileContent({
             </CardContent>
           </Card>
 
-          {addresses.map((address) => (
-            <AddressCard
-              key={address.id}
-              address={address}
-              onUpdate={onAddressUpdate}
-            />
-          ))}
+          {/* Seção de Endereços Melhorada */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle>Endereços de Entrega</CardTitle>
+              <Dialog open={isAddingAddress} onOpenChange={setIsAddingAddress}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Adicionar Endereço
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Adicionar Novo Endereço</DialogTitle>
+                    <DialogDescription>
+                      Preencha os dados do novo endereço de entrega
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  <div className="space-y-4 pt-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="new-zipcode">CEP *</Label>
+                      <Input
+                        id="new-zipcode"
+                        name="zipcode"
+                        value={newAddress.zipcode}
+                        onChange={handleAddressInputChange}
+                        onBlur={handleCepBlur}
+                        placeholder="00000-000"
+                        maxLength={9}
+                        className={addressErrors.zipcode ? "border-destructive" : ""}
+                      />
+                      {addressErrors.zipcode && (
+                        <p className="text-xs text-destructive">{addressErrors.zipcode}</p>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="new-city">Cidade *</Label>
+                        <Input
+                          id="new-city"
+                          name="city"
+                          value={newAddress.city}
+                          onChange={handleAddressInputChange}
+                          className={addressErrors.city ? "border-destructive" : ""}
+                        />
+                        {addressErrors.city && (
+                          <p className="text-xs text-destructive">{addressErrors.city}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="new-state">Estado *</Label>
+                        <Select value={newAddress.state} onValueChange={handleAddressStateChange}>
+                          <SelectTrigger className={addressErrors.state ? "border-destructive" : ""}>
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {states.map(s => (
+                              <SelectItem key={s.value} value={s.value}>
+                                {s.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {addressErrors.state && (
+                          <p className="text-xs text-destructive">{addressErrors.state}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="new-neighborhood">Bairro *</Label>
+                      <Input
+                        id="new-neighborhood"
+                        name="neighborhood"
+                        value={newAddress.neighborhood}
+                        onChange={handleAddressInputChange}
+                        className={addressErrors.neighborhood ? "border-destructive" : ""}
+                      />
+                      {addressErrors.neighborhood && (
+                        <p className="text-xs text-destructive">{addressErrors.neighborhood}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="new-street">Rua / Avenida *</Label>
+                      <Input
+                        id="new-street"
+                        name="street"
+                        value={newAddress.street}
+                        onChange={handleAddressInputChange}
+                        className={addressErrors.street ? "border-destructive" : ""}
+                      />
+                      {addressErrors.street && (
+                        <p className="text-xs text-destructive">{addressErrors.street}</p>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="new-number">Número *</Label>
+                        <Input
+                          id="new-number"
+                          name="number"
+                          value={newAddress.number}
+                          onChange={handleAddressInputChange}
+                          className={addressErrors.number ? "border-destructive" : ""}
+                        />
+                        {addressErrors.number && (
+                          <p className="text-xs text-destructive">{addressErrors.number}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="new-complement">Complemento</Label>
+                        <Input
+                          id="new-complement"
+                          name="complement"
+                          value={newAddress.complement || ""}
+                          onChange={handleAddressInputChange}
+                        />
+                      </div>
+                    </div>
+
+                    {addressErrors.form && (
+                      <p className="text-sm text-destructive text-center">{addressErrors.form}</p>
+                    )}
+
+                    <div className="flex justify-end space-x-2 pt-4">
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          setIsAddingAddress(false);
+                          setNewAddress({
+                            street: "",
+                            number: "",
+                            neighborhood: "",
+                            city: "",
+                            state: "",
+                            zipcode: "",
+                            complement: "",
+                          });
+                          setAddressErrors({});
+                        }}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button onClick={handleAddAddress} disabled={isLoading}>
+                        {isLoading ? "Salvando..." : "Salvar Endereço"}
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </CardHeader>
+            <CardContent className="pt-4">
+              {addresses.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>Você ainda não tem endereços cadastrados.</p>
+                  <p className="text-sm mt-2">Adicione um endereço para facilitar suas compras.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {addresses.map((address) => (
+                    <AddressCard
+                      key={address.id}
+                      address={address}
+                      onUpdate={onAddressUpdate}
+                    />
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       )}
 

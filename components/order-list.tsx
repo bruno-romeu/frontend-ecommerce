@@ -75,7 +75,7 @@ const statusConfig: Record<string, {
     icon: CheckCircle,
     badgeVariant: "default",
   },
-  cancelled: {
+  canceled: {
     label: "Cancelado",
     icon: AlertCircle,
     badgeVariant: "destructive",
@@ -266,7 +266,7 @@ export function OrdersList({ orders = [], onCancel }: OrdersListProps) {
     paid: orders.filter((o) => o.status === "paid").length,
     shipped: orders.filter((o) => o.status === "shipped").length,
     delivered: orders.filter((o) => o.status === "delivered").length,
-    cancelled: orders.filter((o) => o.status === "cancelled").length,
+    canceled: orders.filter((o) => o.status === "canceled").length,
   };
 
   const handleCancelClick = async (orderId: number) => {
@@ -292,7 +292,7 @@ export function OrdersList({ orders = [], onCancel }: OrdersListProps) {
             { key: "paid", label: "Pagos" },
             { key: "shipped", label: "Enviados" },
             { key: "delivered", label: "Entregues" },
-            { key: "cancelled", label: "Cancelados" },
+            { key: "canceled", label: "Cancelados" },
           ].map(({ key, label }) => (
             <Button
               key={key}
