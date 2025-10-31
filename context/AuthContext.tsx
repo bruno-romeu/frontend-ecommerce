@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         const initializeAuth = async () => {
             try {
-                const response = await api.get('/auth/users/me/');
+                const response = await api.get('/client/auth/users/me/');
                 setUser(response.data);
             } catch (error: unknown) {
                 if (isAxiosError(error) && error.response?.status === 401) {
