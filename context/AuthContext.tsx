@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const login = async (email: string, password: string) => {
         try {
-            await api.post('/auth/jwt/create/', { email, password });
+            await api.post('/client/auth/jwt/create/', { email, password });
             const userResponse = await api.get('/auth/users/me/');
             setUser(userResponse.data);
             router.push('/perfil');
@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const logout = async () => {
         try {
-            await api.post('/auth/logout/');
+            await api.post('/client/auth/logout/');
         } catch (error: unknown) {
             console.error('Erro no logout:', error);
         } finally {
