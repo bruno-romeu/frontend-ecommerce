@@ -28,7 +28,7 @@ interface AuthContextType {
     user: User | null;
     login: (email: string, password: string) => Promise<void>;
     register: (userData: RegisterData) => Promise<void>;
-    logout: () => void;
+    logout: () => Promise<void>;
     loading: boolean;
 }
 
@@ -40,84 +40,75 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const router = useRouter();
 
     useEffect(() => {
-            const initializeAuth = async () => {
-                const token = localStorage.getItem('accessToken');
-                if (token) {
-                    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-                    try {
-                        const response = await api.get('/auth/users/me/');
-                        setUser(response.data);
-                    } catch (error) {
-                        console.warn("Acess expirado, tentando Refresh...");
-                        try {
-                            const refresh = localStorage.getItem('refreshToken');
-                            if (!refresh) throw new Error("Sem refresh token");
-
-                            const refreshResponse = await api.post('/auth/jwt/refresh/', { refresh });
-                            const newAccess = refreshResponse.data.access;
-
-                            localStorage.setItem('accessToken', newAccess);
-                            api.defaults.headers.common['Authorization'] = `Bearer ${newAccess}`;
-
-                            const userResponse = await api.get('/auth/users/me/');
-                            setUser(userResponse.data);
-
-                        } catch (refreshError) {
-                            console.error("Refresh falhou, limpando login...");
-                            localStorage.removeItem('accessToken');
-                            delete api.defaults.headers.common['Authorization'];
-                            setUser(null);
-                        }
-                    }
+        const initializeAuth = async () => {
+            try {
+                const response = await api.get('/auth/users/me/');
+                setUser(response.data);
+            } catch (error: unknown) {
+                if (isAxiosError(error) && error.response?.status === 401) {
+                    console.log("Usuário não autenticado");
+                } else {
+                    console.error("Erro ao verificar autenticação:", error);
+                }
+                setUser(null);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
+        
         initializeAuth();
     }, []);
 
     const login = async (email: string, password: string) => {
         try {
-            const response = await api.post('/auth/jwt/create/', { email, password });
-            const { access, refresh } = response.data;
-            
-            localStorage.setItem('accessToken', access);
-            localStorage.setItem('refreshToken', refresh);
-
-            api.defaults.headers.common['Authorization'] = `Bearer ${access}`;
-
+            await api.post('/auth/jwt/create/', { email, password });
             const userResponse = await api.get('/auth/users/me/');
             setUser(userResponse.data);
-
             router.push('/perfil');
-        } catch (error) {
-            console.error('Falha no login:', error);
+        } catch (error: unknown) {
+            if (isAxiosError(error)) {
+                console.error('Falha no login:', error.response?.data?.detail || error.message);
+            } else {
+                console.error('Falha no login:', (error as Error).message);
+            }
+            if (isAxiosError(error)) {
+                throw new Error(error.response?.data?.detail || 'Email ou senha inválidos.');
+            }
             throw new Error('Email ou senha inválidos.');
         }
     };
 
     const register = async (userData: RegisterData) => {
-        try {
-            await api.post('/client/register/', userData);
-            
-            alert("Conta criada com sucesso! Por favor, faça o login.");
-            router.push('/login');
+        try {
+            await api.post('/client/register/', userData);
+            router.push('/login');
+        } catch (error: unknown) {
+            console.error('Falha no registro:', error);
+            throw error; 
+        }
+    };
 
-        } catch (error) {
-            console.error('Falha no registo:', error);
-            throw error; 
-        }
-    };
-
-    const logout = () => {
-        localStorage.removeItem('accessToken');
-        delete api.defaults.headers.common['Authorization'];
-        setUser(null);
-        router.push('/login');
+    const logout = async () => {
+        try {
+            await api.post('/auth/logout/');
+        } catch (error: unknown) {
+            console.error('Erro no logout:', error);
+        } finally {
+            setUser(null);
+            router.push('/login');
+        }
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated: !!user, user, login, register, logout, loading }}>
-        {!loading && children}
+        <AuthContext.Provider value={{ 
+            isAuthenticated: !!user, 
+            user, 
+            login, 
+            register, 
+            logout, 
+            loading 
+        }}>
+            {!loading && children}
         </AuthContext.Provider>
     );
 };
@@ -128,4 +119,4 @@ export const useAuth = () => {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;
-};
+};  
