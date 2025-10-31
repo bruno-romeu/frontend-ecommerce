@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         const initializeAuth = async () => {
             try {
-                const response = await api.get('/client/auth/users/me/');
+                const response = await api.get('/auth/users/me/');
                 setUser(response.data);
             } catch (error: unknown) {
                 if (isAxiosError(error) && error.response?.status === 401) {
@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const login = async (email: string, password: string) => {
         try {
             await api.post('/client/auth/jwt/create/', { email, password });
-            const userResponse = await api.get('/client/auth/users/me/');
+            const userResponse = await api.get('/auth/users/me/');
             setUser(userResponse.data);
             router.push('/perfil');
         } catch (error: unknown) {
