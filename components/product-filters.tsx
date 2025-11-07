@@ -50,36 +50,39 @@ export function ProductFilters() {
     fetchFilterData()
   }, [])
 
-  // Sincronizar estados com URL ao carregar
-  useEffect(() => {
-    // Categorias
-    const categoryParam = searchParams.get('category')
-    if (categoryParam) {
-      setSelectedCategories(categoryParam.split(','))
-    }
+  useEffect(() => {
+    const categoryParams = searchParams.getAll('category') // <- MUDANÇA AQUI
+    if (categoryParams.length > 0) {
+      setSelectedCategories(categoryParams)
+    }
 
-    // Essências
-    const essenceParam = searchParams.get('essence')
-    if (essenceParam) {
-      setSelectedEssences(essenceParam.split(','))
-    }
+    const essenceParams = searchParams.getAll('essence') // <- MUDANÇA AQUI
+    if (essenceParams.length > 0) {
+      setSelectedEssences(essenceParams)
+    }
 
-    // Preço
-    const minPrice = searchParams.get('min_price')
-    const maxPrice = searchParams.get('max_price')
-    if (minPrice || maxPrice) {
-      setPriceRange([
-        minPrice ? Number(minPrice) : 0,
-        maxPrice ? Number(maxPrice) : 500
-      ])
-    }
+    const minPrice = searchParams.get('min_price')
+    const maxPrice = searchParams.get('max_price')
+    if (minPrice || maxPrice) {
+      setPriceRange([
+        minPrice ? Number(minPrice) : 0,
+        maxPrice ? Number(maxPrice) : 500
+      ])
+    }
 
-    // Ordenação
-    const ordering = searchParams.get('ordering')
-    if (ordering) {
-      setSortBy(ordering)
-    }
-  }, [searchParams])
+    const ordering = searchParams.get('ordering')
+    if (ordering) {
+      const orderingMap: Record<string, string> = {
+        'newest': '-created_at',
+        'price-low': 'price',
+        'price-high': '-price',
+        'name': 'name'
+      }
+      
+      const sortKey = Object.keys(orderingMap).find(key => orderingMap[key] === ordering)
+      setSortBy(sortKey || 'newest')
+    }
+  }, [searchParams])
 
   // Atualizar URL quando filtros mudarem
   const updateURL = (updates: Record<string, string | null>) => {

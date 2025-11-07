@@ -43,11 +43,11 @@ function ProductsPageContent() {
         </aside>
         <main className="md:col-span-3">
           {isLoading ? (
-            <p className="text-center text-muted-foreground">A carregar produtos...</p>
+            <p className="text-center text-foreground">A carregar produtos...</p>
           ) : products.length > 0 ? (
             <ProductsGrid products={products} />
           ) : (
-            <p className="text-center text-muted-foreground">Nenhum produto encontrado com os filtros selecionados.</p>
+            <p className="text-center text-foreground">Nenhum produto encontrado com os filtros selecionados.</p>
           )}
         </main>
       </div>
