@@ -106,9 +106,13 @@ export function ProductFilters() {
     }
 
     setSelectedCategories(newCategories)
-    updateURL({
-      category: newCategories.length > 0 ? newCategories.join(',') : null
-    })
+
+
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete('category')
+    newCategories.forEach(cat => params.append('category', cat))
+    
+    router.push(`/produtos?${params.toString()}`, { scroll: false })
   }
 
   const handleEssenceChange = (essenceSlug: string, checked: boolean) => {
@@ -125,9 +129,12 @@ export function ProductFilters() {
     }
 
     setSelectedEssences(newEssences)
-    updateURL({
-      essence: newEssences.length > 0 ? newEssences.join(',') : null
-    })
+    
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete('essence')
+    newEssences.forEach(ess => params.append('essence', ess))
+    
+    router.push(`/produtos?${params.toString()}`, { scroll: false })
   }
 
   const handlePriceChange = (value: number[]) => {
