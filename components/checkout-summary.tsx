@@ -344,7 +344,7 @@ export function CheckoutSummary({
         )}
 
         {couponData && (
-          <div className="flex justify-between pt-1 text-destructive">
+          <div className="flex justify-between pt-1 text-green-400">
             <span>Desconto ({couponData.code})</span>
             <span className="font-medium">
               - R$ {discountValue.toFixed(2).replace(".", ",")}
