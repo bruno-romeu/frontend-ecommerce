@@ -35,15 +35,32 @@ interface CouponData {
   discount_amount: number
 }
 
+// Exported helper so other pages (e.g. checkout page) can retrieve
+// the currently selected shipping price from sessionStorage.
+export function getSelectedShippingPrice(): number {
+  try {
+    const selected = sessionStorage.getItem('shipping_selected')
+    const optionsRaw = sessionStorage.getItem('shipping_options')
+    if (!selected || !optionsRaw) return 0
+    const options: ShippingOption[] = JSON.parse(optionsRaw)
+    const option = options.find(opt => `${opt.servico}-${opt.preco}` === selected)
+    return option ? Number(option.preco) : 0
+  } catch (e) {
+    console.error('Erro ao obter frete selecionado:', e)
+    return 0
+  }
+}
+
 export function CheckoutSummary({ 
   handlePayment, 
   isLoading, 
   preferenceId, 
   error, 
   isFormValid, 
-  isCheckoutPage = false 
+  isCheckoutPage = false,
 }: CheckoutSummaryProps) {
   const { cartItems, total } = useCart()
+  const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0)
   
   const [cep, setCep] = useState("")
   const [isCalculating, setIsCalculating] = useState(false)
@@ -125,13 +142,11 @@ export function CheckoutSummary({
     }
   }
 
-  const getSelectedShippingPrice = () => {
-    if (!selectedShipping) return 0
-    const option = shippingOptions.find(opt => 
-      `${opt.servico}-${opt.preco}` === selectedShipping
-    )
-    return option ? Number(option.preco) : 0
-  }
+  // use the exported helper which reads from sessionStorage
+  // so the checkout page can also access the currently selected price.
+  // Note: this component still keeps local state `selectedShipping` and
+  // `shippingOptions` for UI, but the final value is derived from
+  // the shared sessionStorage-backed helper for consistency.
 
   const handleShippingSelect = (value: string) => {
     setSelectedShipping(value)
@@ -197,7 +212,7 @@ export function CheckoutSummary({
       
       <div className="space-y-2 text-sm sm:text-base">
         <div className="flex justify-between">
-          <span>Subtotal ({cartItems.length} {cartItems.length === 1 ? 'item' : 'itens'})</span>
+          <span>Subtotal ({totalQuantity} {totalQuantity === 1 ? 'item' : 'itens'})</span>
           <span className="font-medium">R$ {total.toFixed(2).replace(".", ",")}</span>
         </div>
 

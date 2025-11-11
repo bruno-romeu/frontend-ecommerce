@@ -12,10 +12,10 @@ export default function FalhaPage() {
             <XCircle className="h-6 w-6 text-red-600" />
           </div>
           <CardTitle className="mt-4 text-2xl font-bold tracking-tight">Pagamento Recusado</CardTitle>
-          <CardDescription>Não foi possível processar o seu pagamento.</CardDescription>
+          <CardDescription className='text-red-600'>Não foi possível processar o seu pagamento.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-default">
             Houve um problema com a sua forma de pagamento e nenhum valor foi cobrado. Por favor, verifique os seus dados ou tente um método diferente.
           </p>
           <div className="flex flex-col space-y-2">

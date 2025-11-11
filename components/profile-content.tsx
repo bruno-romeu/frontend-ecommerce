@@ -652,7 +652,7 @@ export function ProfileContent({
           {ordersLoading ? (
             <Card>
               <CardContent className="flex justify-center py-12">
-                <p className="text-muted-foreground">
+                <p className="text-default">
                   Carregando pedidos...
                 </p>
               </CardContent>

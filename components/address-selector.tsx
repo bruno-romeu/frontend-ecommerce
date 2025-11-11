@@ -26,7 +26,7 @@ export function AddressSelector({ addresses, selectedAddressId, onSelectAddress,
             }`}
           >
             <p className="font-semibold">{`${address.street}, ${address.number}`}</p>
-            <p className="text-sm text-muted-foreground">{`${address.city}, ${address.state} - ${address.zipcode}`}</p>
+            <p className="text-sm text-default">{`${address.city}, ${address.state} - ${address.zipcode}`}</p>
           </div>
         ))}
       </div>

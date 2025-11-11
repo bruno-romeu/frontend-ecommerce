@@ -156,11 +156,17 @@ function OrderCard({ order, isExpanded, onToggle, onCancel, isCanceling }: Order
                         {item.quantity}x {item.product.name}
                       </span>
                       <span className="text-sm font-bold">
-                        R${" "}
+                        Produtos: R${" "}
                         {(typeof item.price === "string" 
                           ? parseFloat(item.price) 
                           : item.price
                         ).toFixed(2).replace(".", ",")}
+                        <p>
+                          Frete: R${" "}
+                          {order.shipping && order.shipping.status !== "canceled"
+                            ? "0,00"
+                            : "—"} 
+                        </p>
                       </span>
                     </div>
                   ))
@@ -188,14 +194,14 @@ function OrderCard({ order, isExpanded, onToggle, onCancel, isCanceling }: Order
               )}
 
               {order.shipping && (
-                <div className="bg-muted/50 p-3 rounded-md border border-border">
-                  <p className="text-xs text-muted-foreground mb-1">
+                <div className="bg-secondary/5 p-3 rounded-md border border-border">
+                  <p className="text-xs text-foreground font-semibold mb-1">
                     Envio
                   </p>
-                  <p className="text-xs font-semibold text-foreground">
+                  <p className="text-xs font-semibold text-accent">
                     {order.shipping.carrier || "N/A"}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-foreground font-normal mt-1">
                     {order.shipping.status === "shipped"
                       ? "Enviado"
                       : "Processando"}

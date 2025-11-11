@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { CheckoutForm, CheckoutFormData } from "@/components/checkout-form";
-import { CheckoutSummary } from "@/components/checkout-summary";
+import { CheckoutSummary, getSelectedShippingPrice } from "@/components/checkout-summary";
 import { AddressSelector } from "@/components/address-selector";
 import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext"; 
+
 
 export interface SavedAddress {
   id: number;
@@ -99,13 +100,11 @@ export default function CheckoutPage() {
           setIsLoading(false);
           return;
         }
-        console.log("Passo 1: Criando novo endereço...");
         const addressResponse = await api.post('/client/address/create/', {
           street: formData.street, number: formData.number, complement: formData.complement,
           neighborhood: formData.neighborhood, city: formData.city, state: formData.state, zipcode: formData.zipCode,
         });
         addressIdToUse = addressResponse.data.id;
-        console.log(`Endereço ${addressIdToUse} criado.`);
       }
 
       if (!addressIdToUse) {
@@ -114,13 +113,13 @@ export default function CheckoutPage() {
         return;
       }
 
+      const shippingCost = getSelectedShippingPrice();
+
       // Passo 2: Criar o Pedido
-      console.log(`Passo 2: Criando pedido com endereço ID ${addressIdToUse}...`);
-      const orderResponse = await api.post('/order/order-create/', { address: addressIdToUse });
+      const orderResponse = await api.post('/order/order-create/', { address: addressIdToUse, shipping_cost: shippingCost });
       const newOrderId = orderResponse.data.id;
 
       // Passo 3: Criar o Pagamento
-      console.log(`Passo 3: Criando pagamento para pedido ID ${newOrderId}...`);
       const paymentResponse = await api.post('/checkout/payments/create/', { order: newOrderId });
       
       setPreferenceId(paymentResponse.data.preference_id);
@@ -181,3 +180,4 @@ export default function CheckoutPage() {
     </div>
   );
 }
+

@@ -23,7 +23,7 @@ export interface Product {
     id: number;
     slug: string;
     name: string;
-    price: string;
+    price: string | number;
     size: Size | null;
     essence: Essence | null;
     image?: string | null; 
