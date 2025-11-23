@@ -19,14 +19,14 @@ function SuccessContent() {
             <CheckCircle2 className="h-6 w-6 text-green-600" />
           </div>
           <CardTitle className="mt-4 text-2xl font-bold tracking-tight">Pagamento Aprovado!</CardTitle>
-          <CardDescription>Obrigado pela sua compra.</CardDescription>
+          <CardDescription className='text-dafault font-bold'>Obrigado pela sua compra.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-default">
             Uma confirmação foi enviada para o seu email. O seu pedido está a ser preparado para envio.
           </p>
           {orderId && (
-            <p className="text-lg font-medium bg-secondary p-2 rounded-md">
+            <p className="text-lg font-medium bg-secondary p-2 rounded-md text-white">
               Código do Pedido: <strong>#{orderId}</strong>
             </p>
           )}

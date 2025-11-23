@@ -12,7 +12,7 @@ import Link from "next/link"
 import { Loader2, X, Tag } from "lucide-react" 
 import api from "@/lib/api"
 
-initMercadoPago('TEST-4e212cbb-aff5-468b-9d8a-f1b82557a03c')
+initMercadoPago('APP_USR-d77a4872-5956-4898-8638-4a4f7c8d9ca2')
 
 interface CheckoutSummaryProps {
   handlePayment?: () => void
