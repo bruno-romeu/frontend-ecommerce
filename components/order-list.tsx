@@ -163,9 +163,7 @@ function OrderCard({ order, isExpanded, onToggle, onCancel, isCanceling }: Order
                         ).toFixed(2).replace(".", ",")}
                         <p>
                           Frete: R${" "}
-                          {order.shipping && order.shipping.status !== "canceled"
-                            ? "0,00"
-                            : "—"} 
+                          
                         </p>
                       </span>
                     </div>
