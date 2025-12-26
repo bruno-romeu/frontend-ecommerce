@@ -35,8 +35,6 @@ interface CouponData {
   discount_amount: number
 }
 
-// Exported helper so other pages (e.g. checkout page) can retrieve
-// the currently selected shipping price from sessionStorage.
 export function getSelectedShippingPrice(): number {
   try {
     const selected = sessionStorage.getItem('shipping_selected')
@@ -142,11 +140,6 @@ export function CheckoutSummary({
     }
   }
 
-  // use the exported helper which reads from sessionStorage
-  // so the checkout page can also access the currently selected price.
-  // Note: this component still keeps local state `selectedShipping` and
-  // `shippingOptions` for UI, but the final value is derived from
-  // the shared sessionStorage-backed helper for consistency.
 
   const handleShippingSelect = (value: string) => {
     setSelectedShipping(value)
