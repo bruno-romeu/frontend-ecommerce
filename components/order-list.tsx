@@ -209,15 +209,15 @@ function OrderCard({ order, isExpanded, onToggle, onCancel, isCanceling }: Order
             </div>
 
             {order.shipping?.tracking_code && (
-              <div className="bg-muted/50 p-3 rounded-md border border-border">
-                <p className="text-xs text-muted-foreground mb-2">
+              <div className="bg-secondary/5 p-3 rounded-md border border-border">
+                <p className="text-xs text-foreground font-semibold mb-1">
                   Código de Rastreamento
                 </p>
-                <p className="font-mono font-semibold text-sm text-foreground">
+                <p className="text-xs font-semibold text-accent">
                   {order.shipping.tracking_code}
                 </p>
                 {order.shipping.estimated_delivery && (
-                  <p className="text-xs text-muted-foreground mt-2">
+                  <p className="text-xs text-foreground font-normal mt-1">
                     Entrega estimada:{" "}
                     {new Date(
                       order.shipping.estimated_delivery

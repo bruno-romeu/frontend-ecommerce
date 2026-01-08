@@ -11,6 +11,7 @@ import { initMercadoPago, Wallet } from '@mercadopago/sdk-react'
 import Link from "next/link"
 import { Loader2, X, Tag } from "lucide-react" 
 import api from "@/lib/api"
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
 
 initMercadoPago('APP_USR-d77a4872-5956-4898-8638-4a4f7c8d9ca2')
 
@@ -21,6 +22,16 @@ interface CheckoutSummaryProps {
   error?: string | null
   isFormValid?: boolean
   isCheckoutPage?: boolean
+  selectedAddress?: {
+    id: number
+    street: string
+    number: string
+    neighborhood: string
+    city: string
+    state: string
+    zipcode: string
+    complement?: string
+  }
 }
 
 interface ShippingOption {
@@ -56,6 +67,7 @@ export function CheckoutSummary({
   error, 
   isFormValid, 
   isCheckoutPage = false,
+  selectedAddress,
 }: CheckoutSummaryProps) {
   const { cartItems, total } = useCart()
   const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0)
@@ -98,6 +110,27 @@ export function CheckoutSummary({
     }
   }, [])
 
+  useEffect(() => {
+    if (isCheckoutPage && selectedAddress && !cep) {
+      const cepFormatted = formatCep(selectedAddress.zipcode)
+      setCep(cepFormatted)
+      sessionStorage.setItem('shipping_cep', cepFormatted)
+      
+      calculateShippingForCep(selectedAddress.zipcode.replace(/\D/g, ''))
+    }
+  }, [selectedAddress, isCheckoutPage])
+
+  useEffect(() => {
+    return () => {
+      if (!isCheckoutPage) {
+        sessionStorage.removeItem('shipping_cep')
+        sessionStorage.removeItem('shipping_options')
+        sessionStorage.removeItem('shipping_selected')
+        sessionStorage.removeItem('coupon_data')
+      }
+    }
+  }, [isCheckoutPage])
+
   const formatCep = (value: string) => {
     const numbers = value.replace(/\D/g, "")
     if (numbers.length <= 5) return numbers
@@ -111,16 +144,15 @@ export function CheckoutSummary({
     sessionStorage.setItem('shipping_cep', formatted)
   }
 
-  const calculateShipping = async () => {
-    if (!cep || cep.replace(/\D/g, "").length !== 8) {
+  const calculateShippingForCep = async (cepClean: string) => {
+    if (!cepClean || cepClean.length !== 8) {
       setShippingError("Por favor, insira um CEP válido")
       return
     }
     setIsCalculating(true)
     setShippingError(null)
     try {
-      const cepLimpo = cep.replace(/\D/g, "")
-      const response = await api.post('/cart/calculate-shipping/', { cep: cepLimpo })
+      const response = await api.post('/cart/calculate-shipping/', { cep: cepClean })
       
       if (!response.data || response.data.length === 0) {
         setShippingError("Nenhuma opção de frete disponível para este CEP")
@@ -138,6 +170,15 @@ export function CheckoutSummary({
     } finally {
       setIsCalculating(false)
     }
+  }
+
+  const calculateShipping = async () => {
+    if (!cep || cep.replace(/\D/g, "").length !== 8) {
+      setShippingError("Por favor, insira um CEP válido")
+      return
+    }
+    const cepLimpo = cep.replace(/\D/g, "")
+    await calculateShippingForCep(cepLimpo)
   }
 
 
@@ -282,6 +323,7 @@ export function CheckoutSummary({
                   maxLength={9}
                   className="flex-1"
                   disabled={isCalculating}
+                  required={true}
                 />
                 <Button
                   onClick={calculateShipping}
@@ -372,25 +414,66 @@ export function CheckoutSummary({
         {isCheckoutPage ? (
           <>
             {!preferenceId ? (
-              <Button
-                size="lg"
-                className="w-full bg-accent hover:bg-accent text-foreground text-sm sm:text-base"
-                onClick={handlePayment}
-                disabled={!isFormValid || isLoading || (shippingOptions.length > 0 && !selectedShipping)}
-              >
-                {isLoading ? "Aguarde..." : "Finalizar e Pagar"}
-              </Button>
+              <>
+                {(!cep || cep.replace(/\D/g, "").length !== 8) ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="w-full block">
+                        <Button
+                          size="lg"
+                          className="w-full bg-accent hover:bg-accent text-foreground cursor-not-allowed text-sm sm:text-base opacity-50"
+                          disabled
+                          aria-disabled="true"
+                        >
+                          Finalizar e Pagar
+                        </Button>
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">CEP obrigatório</TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <Button
+                    size="lg"
+                    className="w-full bg-accent hover:bg-accent text-foreground text-sm sm:text-base"
+                    onClick={handlePayment}
+                    disabled={!isFormValid || isLoading || (shippingOptions.length > 0 && !selectedShipping)}
+                  >
+                    {isLoading ? "Aguarde..." : "Finalizar e Pagar"}
+                  </Button>
+                )}
+              </>
             ) : (
               <Wallet initialization={{ preferenceId: preferenceId }} />
             )}
             {error && <p className="text-destructive text-xs sm:text-sm mt-2 text-center">{error}</p>}
           </>
         ) : (
-          <Link href="/checkout" className="w-full">
-            <Button size="lg" className="w-full bg-accent hover:bg-accent-hover text-white cursor-pointer text-sm sm:text-base">
-              Ir para o Checkout
-            </Button>
-          </Link>
+          <>
+            {(!cep || cep.replace(/\D/g, "").length !== 8) ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="w-full block">
+                    <Button
+                      size="lg"
+                      className="w-full bg-accent hover:bg-accent-hover text-white cursor-not-allowed text-sm sm:text-base opacity-50"
+                      disabled
+                      aria-disabled="true"
+                      title="Preencha o CEP para prosseguir"
+                    >
+                      Ir para o Checkout
+                    </Button>
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top">CEP obrigatório</TooltipContent>
+              </Tooltip>
+            ) : (
+              <Link href="/checkout" className="w-full">
+                <Button size="lg" className="w-full bg-accent hover:bg-accent-hover text-white cursor-pointer text-sm sm:text-base" >
+                  Ir para o Checkout
+                </Button>
+              </Link>
+            )}
+          </>
         )}
       </div>
     </div>

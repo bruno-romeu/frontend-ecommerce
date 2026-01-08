@@ -51,7 +51,7 @@ export function ProductInfo({ product, availableOptions }: ProductInfoProps) {
       {/* Status do Estoque */}
       <div className="text-sm font-medium">
         {hasStock ? (
-          <span className="bg-green-100 rounded-2xl p-1.5 text-green-800">Em estoque ({product.stock_quantity} unidades)</span>
+          <span className="bg-green-100 rounded-2xl p-1.5 text-green-800">Em estoque</span>
         ) : (
           <span className="text-red-600">Fora de estoque</span>
         )}

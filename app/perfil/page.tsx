@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
 import { ProfileSidebar } from "@/components/profile-sidebar";
@@ -28,7 +29,16 @@ interface Address {
 
 export default function PerfilPage() {
   const { user, logout, loading: authLoading } = useAuth();
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('dados');
+
+  // Read tab from URL query parameter on mount
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam === 'pedidos' || tabParam === 'endereco' || tabParam === 'dados') {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
 
   const handleProfileUpdate = (updatedProfile: UserProfile) => {
     setProfile(updatedProfile)
