@@ -80,12 +80,12 @@ export default function VerificacaoEnviadaPage() {
         <CardContent className="space-y-6">
           {email && (
             <div className="text-center">
-              <p className="text-sm text-default mb-2">Email enviado para:</p>
+              <p className="text-default text-default mb-2">Email enviado para:</p>
               <p className="font-semibold text-foreground">{email}</p>
             </div>
           )}
 
-          <div className="space-y-3 text-sm text-secondary">
+          <div className="space-y-3 text-default text-secondary">
             <div className="flex items-start gap-2">
               <Clock className="h-4 w-4 mt-0.5 flex-shrink-0" />
               <p>O link de verificação é válido por 24 horas</p>
@@ -97,7 +97,7 @@ export default function VerificacaoEnviadaPage() {
           </div>
 
           {resendMessage && (
-            <div className={`text-sm p-3 rounded-md ${
+            <div className={`text-default p-3 rounded-md ${
               resendMessage.includes('✅') 
                 ? 'bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-200' 
                 : resendMessage.includes('⚠️')
