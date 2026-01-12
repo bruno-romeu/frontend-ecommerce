@@ -627,7 +627,7 @@ export function ProfileContent({
             </CardHeader>
             <CardContent className="pt-4">
               {addresses.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
+                <div className="text-center py-8 text-black">
                   <p>Você ainda não tem endereços cadastrados.</p>
                   <p className="text-sm mt-2">Adicione um endereço para facilitar suas compras.</p>
                 </div>

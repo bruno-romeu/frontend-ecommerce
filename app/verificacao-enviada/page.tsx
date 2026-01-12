@@ -42,16 +42,16 @@ export default function VerificacaoEnviadaPage() {
 
     try {
       await api.post('/client/resend-verification/', { email })
-      setResendMessage("✅ Email reenviado com sucesso! Verifique sua caixa de entrada.")
+      setResendMessage("Email reenviado com sucesso! Verifique sua caixa de entrada.")
       setCanResend(false)
       setCountdown(300) // 5 minutos em segundos
     } catch (error: any) {
       if (error.response?.status === 429) {
-        setResendMessage("⚠️ Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.")
+        setResendMessage("Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.")
         setCanResend(false)
         setCountdown(300)
       } else {
-        setResendMessage("❌ Erro ao reenviar email. Tente novamente mais tarde.")
+        setResendMessage("Erro ao reenviar email. Tente novamente mais tarde.")
       }
     } finally {
       setIsResending(false)
@@ -97,12 +97,12 @@ export default function VerificacaoEnviadaPage() {
           </div>
 
           {resendMessage && (
-            <div className={`text-default p-3 rounded-md ${
+            <div className={`text-black p-3 rounded-md ${
               resendMessage.includes('✅') 
-                ? 'bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-200' 
+                ? 'bg-green-50 text-black dark:bg-green-900/20 dark:text-white' 
                 : resendMessage.includes('⚠️')
-                ? 'bg-yellow-50 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200'
-                : 'bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-200'
+                ? 'bg-yellow-50 text-black dark:bg-yellow-900/20 dark:text-white'
+                : 'bg-red-50 text-black dark:bg-red-900/20 dark:text-white'
             }`}>
               {resendMessage}
             </div>

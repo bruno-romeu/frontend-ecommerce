@@ -106,7 +106,7 @@ export function LoginForm() {
             {isLoading ? "Entrando..." : "Entrar"}
           </Button>
 
-          <div className="text-center text-sm text-muted-foreground">
+          <div className="text-center text-sm text-foreground">
             Ainda não tem uma conta?{" "}
             <Link href="/cadastro" className="text-primary hover:underline font-medium">
               Cadastre-se
