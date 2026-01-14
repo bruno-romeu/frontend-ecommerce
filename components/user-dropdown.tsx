@@ -46,7 +46,7 @@ export function UserDropdown({ isLoggedIn }: UserDropdownProps) {
                 Meus Pedidos
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem asChild disabled={true}>
               <Link href="/lista-desejos" className="cursor-pointer">
                 <Heart className="mr-2 h-4 w-4" />
                 Lista de Desejos

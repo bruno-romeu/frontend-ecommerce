@@ -42,16 +42,16 @@ export default function VerificacaoEnviadaPage() {
 
     try {
       await api.post('/client/resend-verification/', { email })
-      setResendMessage("✅ Email reenviado com sucesso! Verifique sua caixa de entrada.")
+      setResendMessage("Email reenviado com sucesso! Verifique sua caixa de entrada.")
       setCanResend(false)
       setCountdown(300) // 5 minutos em segundos
     } catch (error: any) {
       if (error.response?.status === 429) {
-        setResendMessage("⚠️ Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.")
+        setResendMessage("Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.")
         setCanResend(false)
         setCountdown(300)
       } else {
-        setResendMessage("❌ Erro ao reenviar email. Tente novamente mais tarde.")
+        setResendMessage("Erro ao reenviar email. Tente novamente mais tarde.")
       }
     } finally {
       setIsResending(false)
@@ -80,12 +80,12 @@ export default function VerificacaoEnviadaPage() {
         <CardContent className="space-y-6">
           {email && (
             <div className="text-center">
-              <p className="text-sm text-default mb-2">Email enviado para:</p>
+              <p className="text-default text-default mb-2">Email enviado para:</p>
               <p className="font-semibold text-foreground">{email}</p>
             </div>
           )}
 
-          <div className="space-y-3 text-sm text-secondary">
+          <div className="space-y-3 text-default text-secondary">
             <div className="flex items-start gap-2">
               <Clock className="h-4 w-4 mt-0.5 flex-shrink-0" />
               <p>O link de verificação é válido por 24 horas</p>
@@ -97,12 +97,12 @@ export default function VerificacaoEnviadaPage() {
           </div>
 
           {resendMessage && (
-            <div className={`text-sm p-3 rounded-md ${
+            <div className={`text-black p-3 rounded-md ${
               resendMessage.includes('✅') 
-                ? 'bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-200' 
+                ? 'bg-green-50 text-black dark:bg-green-900/20 dark:text-white' 
                 : resendMessage.includes('⚠️')
-                ? 'bg-yellow-50 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200'
-                : 'bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-200'
+                ? 'bg-yellow-50 text-black dark:bg-yellow-900/20 dark:text-white'
+                : 'bg-red-50 text-black dark:bg-red-900/20 dark:text-white'
             }`}>
               {resendMessage}
             </div>

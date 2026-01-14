@@ -49,7 +49,7 @@ export default function CheckoutPage() {
         }
       } catch (err) {
         console.error("Erro ao buscar endereços:", err);
-        setShowNewAddressForm(true); // Mostra o formulário em caso de erro
+        setShowNewAddressForm(true); 
       } finally {
         setIsLoadingAddresses(false);
       }
@@ -93,7 +93,6 @@ export default function CheckoutPage() {
     let addressIdToUse = selectedAddressId;
 
     try {
-      // Se um novo endereço está a ser criado, executamos o Passo 1
       if (showNewAddressForm) {
         if (!isFormValid()) {
           setError("Por favor, preencha todos os campos do novo endereço.");
@@ -115,14 +114,18 @@ export default function CheckoutPage() {
 
       const shippingCost = getSelectedShippingPrice();
 
-      // Passo 2: Criar o Pedido
       const orderResponse = await api.post('/order/order-create/', { address: addressIdToUse, shipping_cost: shippingCost });
       const newOrderId = orderResponse.data.id;
 
-      // Passo 3: Criar o Pagamento
       const paymentResponse = await api.post('/checkout/payments/create/', { order: newOrderId });
       
       setPreferenceId(paymentResponse.data.preference_id);
+      
+      // Clear shipping and coupon data after successful order creation
+      sessionStorage.removeItem('shipping_cep');
+      sessionStorage.removeItem('shipping_options');
+      sessionStorage.removeItem('shipping_selected');
+      sessionStorage.removeItem('coupon_data');
 
     } catch (err) {
       console.error("Erro no fluxo de checkout:", err);
@@ -140,7 +143,6 @@ export default function CheckoutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-8">Finalizar Compra</h1>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* CORREÇÃO 3: Lógica de exibição condicional */}
             <div className="lg:col-span-2 space-y-8">
               {isLoadingAddresses ? (
                 <p>Carregando endereços...</p>
@@ -172,6 +174,7 @@ export default function CheckoutPage() {
                 error={error}
                 isFormValid={showNewAddressForm ? isFormValid() : !!selectedAddressId}
                 isCheckoutPage={true}
+                selectedAddress={selectedAddressId ? savedAddresses.find(a => a.id === selectedAddressId) : undefined}
               />
             </div>
           </div>
