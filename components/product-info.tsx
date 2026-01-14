@@ -10,9 +10,10 @@ import { useCart } from "@/context/CartContext"
 interface ProductInfoProps {
   product: Product;
   availableOptions: AvailableOptions; 
+  size: Size;
 }
 
-export function ProductInfo({ product, availableOptions }: ProductInfoProps) {
+export function ProductInfo({ product, availableOptions, size }: ProductInfoProps) {
   const [quantity, setQuantity] = useState(1);
 
   const [selectedSizeId, setSelectedSizeId] = useState<number | null>(product.size?.id || null);
@@ -51,7 +52,7 @@ export function ProductInfo({ product, availableOptions }: ProductInfoProps) {
       {/* Status do Estoque */}
       <div className="text-sm font-medium">
         {hasStock ? (
-          <span className="bg-green-100 rounded-2xl p-1.5 text-green-800">Em estoque ({product.stock_quantity} unidades)</span>
+          <span className="bg-green-100 rounded-2xl p-1.5 text-green-800">Em estoque</span>
         ) : (
           <span className="text-red-600">Fora de estoque</span>
         )}
@@ -60,21 +61,14 @@ export function ProductInfo({ product, availableOptions }: ProductInfoProps) {
       {/* Variações */}
       <div className="space-y-4">
         {/* Seletor de Tamanho */}
-        {availableOptions.sizes && availableOptions.sizes.length > 0 && (
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Tamanho</label>
-            <Select onValueChange={(value) => setSelectedSizeId(Number(value))} defaultValue={selectedSizeId?.toString()}>
-              <SelectTrigger><SelectValue placeholder="Selecione o tamanho" /></SelectTrigger>
-              <SelectContent>
-                {availableOptions.sizes.map((size) => (
-                  <SelectItem key={size.id} value={size.id.toString()}>
-                    {size.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center space-x-3 mb-2">
+              <span className="text-sm font-medium text-foreground">Tamanho:</span>
+                <span className="inline-flex flex-col items-center px-3 py-1 rounded-md bg-gray-200 text-sm font-semibold text-foreground">
+                  <span className="mt-0.5 text-xl text-foreground">{size?.weight ?? product.size?.weight}{size?.unit ?? product.size?.unit}</span>
+                </span>
+            </div>
           </div>
-        )}
 
         {/* Seletor de Essência */}
         {availableOptions.essences && availableOptions.essences.length > 0 && (

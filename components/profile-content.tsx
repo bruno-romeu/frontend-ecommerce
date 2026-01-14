@@ -468,7 +468,7 @@ export function ProfileContent({
             </CardContent>
           </Card>
 
-          {/* Seção de Endereços Melhorada */}
+          {/* Seção de Endereços */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle>Endereços de Entrega</CardTitle>
@@ -627,9 +627,9 @@ export function ProfileContent({
             </CardHeader>
             <CardContent className="pt-4">
               {addresses.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
+                <div className="text-center py-8 text-black">
                   <p>Você ainda não tem endereços cadastrados.</p>
-                  <p className="text-sm mt-2">Adicione um endereço para facilitar suas compras.</p>
+                  <p className="text-sm text-black mt-2">Adicione um endereço para facilitar suas compras.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

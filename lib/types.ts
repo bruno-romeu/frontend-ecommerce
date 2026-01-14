@@ -7,6 +7,8 @@ export interface Category {
 export interface Size {
     id: number;
     name: string;
+    weight: number;
+    unit: string;
 }
 
 export interface Essence {
