@@ -5,9 +5,20 @@ import api from '@/lib/api';
 import { useAuth } from './AuthContext'; 
 import { Product } from '@/lib/types';
 
+export interface Essence {
+    id: number;
+    name: string;
+    description: string | null;
+    is_active: boolean;
+    image_url: string | null;
+    order: number;
+    slug: string;
+}
+
 interface CartItemAPI {
     id: number;
     product: number;
+    essence: Essence | null;
     quantity: number;
 }
 
@@ -19,11 +30,12 @@ interface CartItem extends Product {
     quantity: number;
     price: number;
     image: string;
+    essence: Essence | null;
 }
 
 interface CartContextType {
     cartItems: CartItem[];
-    addToCart: (product: Product, quantity: number) => Promise<void>;
+    addToCart: (product: Product, quantity: number, essenceId: number | null) => Promise<void>;
     removeFromCart: (product_id: number) => Promise<void>;
     updateQuantity: (product_id: number, quantity: number) => Promise<void>;
     total: number;
@@ -44,7 +56,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         setLoading(true);
         try {
             const response = await api.get('/cart/my-cart/');
-            const formattedItems = response.data.items.map((item: any) => ({
+            const formattedItems: CartItem[] = response.data.items.map((item: any) => ({
                 cart: item.cart,
                 cartItemId: item.id,
                 product_id: item.product_id,
@@ -52,6 +64,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                 name: item.product?.name ?? "",
                 price: item.product?.price ?? 0,
                 image: item.product?.image ?? "",
+                essence: item.essence ? {
+                    id: item.essence.id,
+                    name: item.essence.name,
+                    image: item.essence.image
+                } : null
             }));
             setCartItems(formattedItems);
         } catch (error) {
@@ -71,7 +88,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [isAuthenticated]);
 
-    const addToCart = async (product: Product, quantity: number) => {
+    const addToCart = async (product: Product, quantity: number, essenceId: number | null) => {
         if (!isAuthenticated) {
             alert("Por favor, faça login para adicionar itens ao carrinho.");
             return;
@@ -81,6 +98,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             await api.post('/cart/items/add/', {
                 product_id: product.id,
                 quantity: quantity,
+                essence_id: essenceId,
             });
             await fetchCart();
         } catch (error) {
@@ -90,7 +108,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    // Altere as funções para usar cartItemId
     const removeFromCart = async (cartItemId: number) => {
         setLoading(true);
         try {

@@ -23,7 +23,7 @@ export function CartItems() {
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-base sm:text-lg">{item.name}</h3>
                   <p className="text-xs sm:text-sm text-foreground">
-                    {item.size?.name} / {item.essence?.name}
+                    {item.size?.name}{item.essence?.name}
                   </p>
                 </div>
                 <Button

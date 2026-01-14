@@ -42,7 +42,7 @@ export function CartDropdown() {
                       className="w-12 h-12 object-cover rounded"
                     />
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-medium truncate">{item.name}</h4>
+                      <h4 className="text-sm font-medium truncate">{item.name} - {item.essence?.name}</h4>
                       <p className="text-sm text-foreground">R$ {(+item.price).toFixed(2).replace(".", ",")}</p>
                       <div className="flex items-center space-x-2 mt-1">
                         <Button onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)} variant="outline" size="icon" className="h-6 w-6 bg-transparent" disabled={item.quantity <= 1}>

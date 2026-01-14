@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react'
 import Link from "next/link"
-import { Loader2, X, Tag } from "lucide-react" 
+import { Loader2, X, Tag, Store, Truck } from "lucide-react" // Adicionei Store e Truck
 import api from "@/lib/api"
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
 
@@ -35,9 +35,12 @@ interface CheckoutSummaryProps {
 }
 
 interface ShippingOption {
+  id: number | string
   servico: string
   preco: number
   prazo: number
+  transportadora?: string
+  tipo?: string 
 }
 
 interface CouponData {
@@ -359,20 +362,46 @@ export function CheckoutSummary({
               <RadioGroup value={selectedShipping} onValueChange={handleShippingSelect}>
                 {shippingOptions.map((option) => {
                   const optionValue = `${option.servico}-${option.preco}`
+                  
+                  const isRetirada = option.tipo === 'retirada' || option.id === -1 || option.id === '-1';
+                  const isFree = Number(option.preco) === 0;
+
                   return (
-                    <div key={optionValue} className="flex items-center space-x-2 border rounded-md p-3 hover:bg-accent/50 transition-colors">
+                    <div 
+                      key={optionValue} 
+                      className={`flex items-center space-x-2 border rounded-md p-3 transition-all ${
+                        selectedShipping === optionValue 
+                          ? 'border-accent bg-accent/10 ring-1 ring-accent' 
+                          : 'hover:bg-accent/5'
+                      }`}
+                    >
                       <RadioGroupItem value={optionValue} id={optionValue} />
                       <Label
                         htmlFor={optionValue}
-                        className="flex-1 cursor-pointer text-sm leading-tight"
+                        className="flex-1 cursor-pointer text-sm leading-tight flex items-center gap-3"
                       >
-                        <div className="font-medium">{option.servico}</div>
-                        <div className="text-xs text-muted">
-                          {option.prazo} {option.prazo === 1 ? 'dia útil' : 'dias úteis'}
+                        {/* Ícone Dinâmico */}
+                        <div className={`p-2 rounded-full ${isRetirada ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}>
+                           {isRetirada ? <Store className="h-4 w-4" /> : <Truck className="h-4 w-4" />}
+                        </div>
+
+                        <div className="flex-1">
+                            <div className="font-medium">{option.servico}</div>
+                            <div className="text-xs text-muted">
+                                {isRetirada 
+                                  ? 'Disponível em 1 dia útil' 
+                                  : `${option.prazo} ${option.prazo === 1 ? 'dia útil' : 'dias úteis'}`
+                                }
+                            </div>
                         </div>
                       </Label>
-                      <span className="font-semibold text-sm">
-                        R$ {Number(option.preco).toFixed(2).replace(".", ",")}
+                      
+                      {/* Preço com destaque se for grátis */}
+                      <span className={`font-semibold text-sm ${isFree ? 'text-green-600' : ''}`}>
+                        {isFree 
+                          ? 'Grátis' 
+                          : `R$ ${Number(option.preco).toFixed(2).replace(".", ",")}`
+                        }
                       </span>
                     </div>
                   )
@@ -385,9 +414,9 @@ export function CheckoutSummary({
         {shippingOptions.length > 0 && (
           <div className="flex justify-between pt-2">
             <span>Frete</span>
-            <span className="font-medium">
+            <span className={`font-medium ${freteValue === 0 ? 'text-green-600' : ''}`}>
               {selectedShipping 
-                ? `R$ ${freteValue.toFixed(2).replace(".", ",")}` 
+                ? (freteValue === 0 ? "Grátis" : `R$ ${freteValue.toFixed(2).replace(".", ",")}`)
                 : "Selecione uma opção"}
             </span>
           </div>
