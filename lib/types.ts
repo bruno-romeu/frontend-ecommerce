@@ -8,7 +8,7 @@ export interface Size {
     id: number;
     name: string;
     weight: number;
-    unit: string;
+    unit:string;
 }
 
 export interface Essence {
