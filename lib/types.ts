@@ -2,6 +2,7 @@ export interface Category {
     id: number;
     name: string;
     slug: string;
+    customization_options: string[];
 }
 
 export interface Size {
@@ -14,7 +15,9 @@ export interface Size {
 export interface Essence {
     id: number;
     name: string;
-    description: string | null;
+    sensory_profile: string | null;
+    notes: string | null;
+    ambient: string | null
     is_active: boolean;
     image_url: string | null;
     order: number;
@@ -39,9 +42,23 @@ export interface Product {
     is_bestseller: boolean;
 }
 
+export interface ProductCustomization {
+    id: number;
+    type_choices: string[];
+    category: Category;
+    name: string;
+    instruction: string | null;
+    input_type: string | null;
+    available_options: string[];
+    price_extra: number | null;
+    free_above_quantity: number | null;
+
+}
+
 export interface AvailableOptions {
     sizes: Size[];
     essences: Essence[];
+    customizations: ProductCustomization[];
 }
 
 export interface User {

@@ -5,6 +5,18 @@ import api from '@/lib/api';
 import { useAuth } from './AuthContext'; 
 import { Product } from '@/lib/types';
 
+export interface CustomizationPayload {
+    option_id: number;
+    value: string;
+}
+
+export interface CartItemCustomization {
+    id: number;
+    option_name: string; 
+    value: string; 
+    price_extra: number; 
+}
+
 export interface Essence {
     id: number;
     name: string;
@@ -13,13 +25,6 @@ export interface Essence {
     image_url: string | null;
     order: number;
     slug: string;
-}
-
-interface CartItemAPI {
-    id: number;
-    product: number;
-    essence: Essence | null;
-    quantity: number;
 }
 
 interface CartItem extends Product {
@@ -31,13 +36,19 @@ interface CartItem extends Product {
     price: number;
     image: string;
     essence: Essence | null;
+    customizations: CartItemCustomization[];
 }
 
 interface CartContextType {
     cartItems: CartItem[];
-    addToCart: (product: Product, quantity: number, essenceId: number | null) => Promise<void>;
-    removeFromCart: (product_id: number) => Promise<void>;
-    updateQuantity: (product_id: number, quantity: number) => Promise<void>;
+    addToCart: (
+        product: Product, 
+        quantity: number, 
+        essenceId: number | null, 
+        customizations?: CustomizationPayload[] 
+    ) => Promise<void>;
+    removeFromCart: (cartItemId: number) => Promise<void>; 
+    updateQuantity: (cartItemId: number, quantity: number) => Promise<void>;
     total: number;
     cartItemCount: number;
     loading: boolean;
@@ -50,26 +61,36 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(false);
     const { isAuthenticated } = useAuth(); 
 
-    
-
     const fetchCart = async () => {
         setLoading(true);
         try {
             const response = await api.get('/cart/my-cart/');
+            
             const formattedItems: CartItem[] = response.data.items.map((item: any) => ({
                 cart: item.cart,
                 cartItemId: item.id,
-                product_id: item.product_id,
+                product_id: item.product_id || item.product.id,
                 quantity: item.quantity,
-                name: item.product?.name ?? "",
-                price: item.product?.price ?? 0,
+                name: item.product?.name ?? "Produto Indisponível",
+                price: parseFloat(item.product?.price ?? "0"),
                 image: item.product?.image ?? "",
                 essence: item.essence ? {
                     id: item.essence.id,
                     name: item.essence.name,
-                    image: item.essence.image
-                } : null
+                    image_url: item.essence.image,
+                    description: item.essence.description,
+                    is_active: true,
+                    order: 0,
+                    slug: item.essence.slug
+                } : null,
+                customizations: item.customizations ? item.customizations.map((c: any) => ({
+                    id: c.id,
+                    option_name: c.option.name, 
+                    value: c.value,
+                    price_extra: parseFloat(c.option.price_extra || "0")
+                })) : []
             }));
+            
             setCartItems(formattedItems);
         } catch (error) {
             console.error("Não foi possível buscar o carrinho:", error);
@@ -88,7 +109,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [isAuthenticated]);
 
-    const addToCart = async (product: Product, quantity: number, essenceId: number | null) => {
+    const addToCart = async (
+        product: Product, 
+        quantity: number, 
+        essenceId: number | null, 
+        customizations: CustomizationPayload[] = []
+    ) => {
         if (!isAuthenticated) {
             alert("Por favor, faça login para adicionar itens ao carrinho.");
             return;
@@ -96,10 +122,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         setLoading(true);
         try {
             await api.post('/cart/items/add/', {
-                product_id: product.id,
+                product: product.id,  
                 quantity: quantity,
-                essence_id: essenceId,
+                essence: essenceId,   
+                customizations: customizations 
             });
+            
             await fetchCart();
         } catch (error) {
             console.error("Erro ao adicionar item ao carrinho:", error);
@@ -111,8 +139,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const removeFromCart = async (cartItemId: number) => {
         setLoading(true);
         try {
-            await api.delete(`/cart/item/remove/${cartItemId}/`);
-            await fetchCart();
+            await api.delete(`/cart/items/delete/${cartItemId}/`); 
+            
+            setCartItems(prev => prev.filter(item => item.cartItemId !== cartItemId));
+            
+            await fetchCart(); 
         } catch (error) {
             console.error("Erro ao remover item:", error);
         } finally {
@@ -127,7 +158,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
         setLoading(true);
         try {
-            await api.patch(`/cart/items/update/${cartItemId}/`, { quantity });
+            await api.patch(`/cart/items/${cartItemId}/`, { quantity });
             await fetchCart();
         } catch (error) {
             console.error("Erro ao atualizar quantidade:", error);
@@ -136,12 +167,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    const total = cartItems.reduce((sum, item) => sum + (+item.price * item.quantity), 0);
+    const total = cartItems.reduce((sum, item) => {
+        return sum + (+item.price * item.quantity); 
+    }, 0);
+
     const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
     return (
         <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, updateQuantity, total, cartItemCount, loading }}>
-        {children}
+            {children}
         </CartContext.Provider>
     );
 };

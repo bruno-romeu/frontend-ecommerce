@@ -66,7 +66,9 @@ export default function EssenciasPage() {
               {/* Adicionamos 'flex-grow' para que o conteúdo empurre o rodapé para baixo */}
               <CardContent className="flex-grow">
                 <p className="text-card-foreground whitespace-pre-line text-base leading-relaxed">
-                  {essence.description}
+                  <strong>Perfil Sensorial:</strong> {essence.sensory_profile} <br />
+                  <strong>Notas:</strong> {essence.notes} <br />
+                  <strong>Ambiente: </strong>{essence.ambient} <br />
                 </p>
               </CardContent>
               <CardFooter>

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react'
 import Link from "next/link"
-import { Loader2, X, Tag, Store, Truck } from "lucide-react" // Adicionei Store e Truck
+import { Loader2, X, Tag, Store, Truck } from "lucide-react"
 import api from "@/lib/api"
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
 
@@ -86,6 +86,7 @@ export function CheckoutSummary({
   const [couponError, setCouponError] = useState<string | null>(null)
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false)
 
+  // Carrega dados salvos do sessionStorage ao montar o componente
   useEffect(() => {
     const savedCep = sessionStorage.getItem('shipping_cep')
     const savedOptions = sessionStorage.getItem('shipping_options')
@@ -113,6 +114,7 @@ export function CheckoutSummary({
     }
   }, [])
 
+  // Preenche o CEP automaticamente no checkout se houver endereço selecionado
   useEffect(() => {
     if (isCheckoutPage && selectedAddress && !cep) {
       const cepFormatted = formatCep(selectedAddress.zipcode)
@@ -122,17 +124,6 @@ export function CheckoutSummary({
       calculateShippingForCep(selectedAddress.zipcode.replace(/\D/g, ''))
     }
   }, [selectedAddress, isCheckoutPage])
-
-  useEffect(() => {
-    return () => {
-      if (!isCheckoutPage) {
-        sessionStorage.removeItem('shipping_cep')
-        sessionStorage.removeItem('shipping_options')
-        sessionStorage.removeItem('shipping_selected')
-        sessionStorage.removeItem('coupon_data')
-      }
-    }
-  }, [isCheckoutPage])
 
   const formatCep = (value: string) => {
     const numbers = value.replace(/\D/g, "")
@@ -184,7 +175,6 @@ export function CheckoutSummary({
     await calculateShippingForCep(cepLimpo)
   }
 
-
   const handleShippingSelect = (value: string) => {
     setSelectedShipping(value)
     sessionStorage.setItem('shipping_selected', value)
@@ -221,7 +211,8 @@ export function CheckoutSummary({
 
       setCouponData(newCouponData)
       setCouponError(null)
-      sessionStorage.setItem('coupon_data', JSON.stringify(newCouponData)) 
+      sessionStorage.setItem('coupon_data', JSON.stringify(newCouponData))
+      setIsValidatingCoupon(false)
     } catch (err: any) {
       setCouponError(err.response?.data?.error || "Cupom inválido")
       setCouponData(null)
@@ -270,7 +261,7 @@ export function CheckoutSummary({
                     setCouponError(null)
                   }}
                   disabled={isValidatingCoupon}
-                  className="flex-1"
+                  className="flex-1 "
                 />
                 <Button
                   onClick={applyCoupon}
@@ -326,7 +317,6 @@ export function CheckoutSummary({
                   maxLength={9}
                   className="flex-1"
                   disabled={isCalculating}
-                  required={true}
                 />
                 <Button
                   onClick={calculateShipping}
@@ -353,7 +343,7 @@ export function CheckoutSummary({
                   variant="ghost"
                   size="sm"
                   onClick={resetShipping}
-                  className="h-auto p-1 text-xs text-muted hover:text-foreground cursor-pointer"
+                  className="h-auto p-1 text-xs text-foreground hover:text-foreground"
                 >
                   Alterar CEP
                 </Button>
@@ -362,9 +352,8 @@ export function CheckoutSummary({
               <RadioGroup value={selectedShipping} onValueChange={handleShippingSelect}>
                 {shippingOptions.map((option) => {
                   const optionValue = `${option.servico}-${option.preco}`
-                  
-                  const isRetirada = option.tipo === 'retirada' || option.id === -1 || option.id === '-1';
-                  const isFree = Number(option.preco) === 0;
+                  const isRetirada = option.tipo === 'retirada' || option.id === -1 || option.id === '-1'
+                  const isFree = Number(option.preco) === 0
 
                   return (
                     <div 
@@ -380,14 +369,13 @@ export function CheckoutSummary({
                         htmlFor={optionValue}
                         className="flex-1 cursor-pointer text-sm leading-tight flex items-center gap-3"
                       >
-                        {/* Ícone Dinâmico */}
                         <div className={`p-2 rounded-full ${isRetirada ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}>
                            {isRetirada ? <Store className="h-4 w-4" /> : <Truck className="h-4 w-4" />}
                         </div>
 
                         <div className="flex-1">
                             <div className="font-medium">{option.servico}</div>
-                            <div className="text-xs text-muted">
+                            <div className="text-xs text-foreground">
                                 {isRetirada 
                                   ? 'Disponível em 1 dia útil' 
                                   : `${option.prazo} ${option.prazo === 1 ? 'dia útil' : 'dias úteis'}`
@@ -396,7 +384,6 @@ export function CheckoutSummary({
                         </div>
                       </Label>
                       
-                      {/* Preço com destaque se for grátis */}
                       <span className={`font-semibold text-sm ${isFree ? 'text-green-600' : ''}`}>
                         {isFree 
                           ? 'Grátis' 
@@ -487,7 +474,6 @@ export function CheckoutSummary({
                       className="w-full bg-accent hover:bg-accent-hover text-white cursor-not-allowed text-sm sm:text-base opacity-50"
                       disabled
                       aria-disabled="true"
-                      title="Preencha o CEP para prosseguir"
                     >
                       Ir para o Checkout
                     </Button>
@@ -497,7 +483,11 @@ export function CheckoutSummary({
               </Tooltip>
             ) : (
               <Link href="/checkout" className="w-full">
-                <Button size="lg" className="w-full bg-accent hover:bg-accent-hover text-white cursor-pointer text-sm sm:text-base" >
+                <Button 
+                  size="lg" 
+                  className="w-full bg-accent hover:bg-accent-hover text-white text-sm sm:text-base"
+                  disabled={shippingOptions.length > 0 && !selectedShipping}
+                >
                   Ir para o Checkout
                 </Button>
               </Link>
