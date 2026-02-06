@@ -59,7 +59,29 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider = ({ children }: { children: ReactNode }) => {
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [loading, setLoading] = useState(false);
+    const [cartTotal, setCartTotal] = useState(0);
     const { isAuthenticated } = useAuth(); 
+
+    const parseApiTotal = (data: any): number | null => {
+        const rawTotal = data?.total ?? data?.cart_total ?? data?.total_price ?? data?.order_total;
+        if (rawTotal === undefined || rawTotal === null) return null;
+        const parsed = typeof rawTotal === "number" ? rawTotal : parseFloat(rawTotal);
+        return Number.isNaN(parsed) ? null : parsed;
+    };
+
+    const getCustomizationErrorMessage = (error: any): string | null => {
+        const customizations = error?.response?.data?.customizations;
+        if (!customizations) return null;
+        if (typeof customizations === "string") return customizations;
+        if (Array.isArray(customizations)) return customizations.join(" ");
+        if (typeof customizations === "object") {
+            return Object.values(customizations)
+                .flat()
+                .filter((value) => typeof value === "string")
+                .join(" ");
+        }
+        return null;
+    };
 
     const fetchCart = async () => {
         setLoading(true);
@@ -72,7 +94,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                 product_id: item.product_id || item.product.id,
                 quantity: item.quantity,
                 name: item.product?.name ?? "Produto Indisponível",
-                price: parseFloat(item.product?.price ?? "0"),
+                price: parseFloat(item.price ?? item.unit_price ?? item.product?.price ?? "0"),
                 image: item.product?.image ?? "",
                 essence: item.essence ? {
                     id: item.essence.id,
@@ -92,9 +114,17 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             }));
             
             setCartItems(formattedItems);
+            const apiTotal = parseApiTotal(response.data);
+            if (apiTotal !== null) {
+                setCartTotal(apiTotal);
+            } else {
+                const fallbackTotal = formattedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                setCartTotal(fallbackTotal);
+            }
         } catch (error) {
             console.error("Não foi possível buscar o carrinho:", error);
             setCartItems([]); 
+            setCartTotal(0);
         } finally {
             setLoading(false);
         }
@@ -105,6 +135,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             fetchCart();
         } else {
             setCartItems([]);
+            setCartTotal(0);
             setLoading(false);
         }
     }, [isAuthenticated]);
@@ -131,6 +162,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             await fetchCart();
         } catch (error) {
             console.error("Erro ao adicionar item ao carrinho:", error);
+            const customizationMessage = getCustomizationErrorMessage(error);
+            if (customizationMessage) {
+                alert(customizationMessage);
+            } else {
+                alert("Não foi possível adicionar o item ao carrinho. Tente novamente.");
+            }
         } finally {
             setLoading(false);
         }
@@ -167,9 +204,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    const total = cartItems.reduce((sum, item) => {
-        return sum + (+item.price * item.quantity); 
-    }, 0);
+    const total = cartTotal;
 
     const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 

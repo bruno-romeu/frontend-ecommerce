@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Input } from "./ui/input";
 import { Label } from "recharts";
 import { Checkbox } from "@radix-ui/react-checkbox";
@@ -21,6 +21,10 @@ export function ProductInfo({ product, availableOptions, size }: ProductInfoProp
   const [selectedEssenceId, setSelectedEssenceId] = useState<number | null>(null);
   const [selectedCustomizations, setSelectedCustomizations] = useState<number[]>([]);
   const [customizationValues, setCustomizationValues] = useState<Record<number, string>>({});
+  const [customizationErrors, setCustomizationErrors] = useState<Record<number, string>>({});
+  const [lastAddedCustomizationId, setLastAddedCustomizationId] = useState<number | null>(null);
+  const customizationFieldRefs = useRef<Record<number, HTMLInputElement | HTMLButtonElement | null>>({});
+  const customizationCardRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
   const { addToCart, loading } = useCart();
 
@@ -42,12 +46,20 @@ export function ProductInfo({ product, availableOptions, size }: ProductInfoProp
       ...prev,
       [optionId]: value
     }));
+    if (customizationErrors[optionId]) {
+      setCustomizationErrors((prev) => {
+        const next = { ...prev };
+        delete next[optionId];
+        return next;
+      });
+    }
   };
 
   const handleAddCustomization = (customizationId: string) => {
     const id = Number(customizationId);
     if (!selectedCustomizations.includes(id)) {
       setSelectedCustomizations(prev => [...prev, id]);
+      setLastAddedCustomizationId(id);
     }
   };
 
@@ -58,15 +70,62 @@ export function ProductInfo({ product, availableOptions, size }: ProductInfoProp
       delete newValues[customizationId];
       return newValues;
     });
+    setCustomizationErrors(prev => {
+      if (!prev[customizationId]) return prev;
+      const next = { ...prev };
+      delete next[customizationId];
+      return next;
+    });
   };
+
+  useEffect(() => {
+    if (!lastAddedCustomizationId) return;
+    const field = customizationFieldRefs.current[lastAddedCustomizationId];
+    const card = customizationCardRefs.current[lastAddedCustomizationId];
+    if (card) {
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    if (field && "focus" in field) {
+      field.focus();
+    }
+    setLastAddedCustomizationId(null);
+  }, [lastAddedCustomizationId]);
 
   const handleAddToCart = async () => {
     if (isEssenceSelectionMissing) return;
 
-    const customizationsArray = selectedCustomizations.map(optionId => ({
-      option_id: optionId,
-      value: customizationValues[optionId] || 'Sim'
-    }));
+    const errors: Record<number, string> = {};
+    selectedCustomizations.forEach((optionId) => {
+      const option = availableOptions.customizations?.find((cust) => cust.id === optionId);
+      if (!option) return;
+      const value = customizationValues[optionId];
+
+      if (option.input_type === "text" && !value?.trim()) {
+        errors[optionId] = "Preencha este campo.";
+      }
+
+      if (option.input_type === "select" && !value) {
+        errors[optionId] = "Selecione uma opção.";
+      }
+    });
+
+    if (Object.keys(errors).length > 0) {
+      setCustomizationErrors(errors);
+      return;
+    }
+
+    setCustomizationErrors({});
+
+    const customizationsArray = selectedCustomizations.map(optionId => {
+      const option = availableOptions.customizations?.find((cust) => cust.id === optionId);
+      const value = customizationValues[optionId];
+
+      if (option?.input_type === "boolean") {
+        return { option_id: optionId, value: value || "Sim" };
+      }
+
+      return { option_id: optionId, value: value || "" };
+    });
 
     await addToCart(product, quantity, selectedEssenceId, customizationsArray);
     
@@ -81,6 +140,14 @@ export function ProductInfo({ product, availableOptions, size }: ProductInfoProp
     if (isEssenceSelectionMissing) return 'Selecione uma essência';
     return 'Adicionar ao Carrinho';
   };
+
+  const selectedCustomizationOptions = availableOptions.customizations?.filter((option) =>
+    selectedCustomizations.includes(option.id)
+  ) || [];
+  const selectedCustomizationExtra = selectedCustomizationOptions.reduce((sum, option) => {
+    const extra = option.price_extra ? Number(option.price_extra) : 0;
+    return sum + extra;
+  }, 0);
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -148,7 +215,17 @@ export function ProductInfo({ product, availableOptions, size }: ProductInfoProp
         {/* Personalizações */}
         {availableOptions.customizations && availableOptions.customizations.length > 0 && (
           <div className="space-y-4 border-t pt-6 mt-6">
-            <h3 className="font-medium text-lg">Personalize seu pedido</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-medium text-lg">Personalize seu pedido</h3>
+              {selectedCustomizations.length > 0 && (
+                <span className="text-xs text-muted-foreground">
+                  {selectedCustomizations.length} personaliza{selectedCustomizations.length > 1 ? "ções" : "ção"}
+                  {selectedCustomizationExtra > 0 && (
+                    <> • + {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(selectedCustomizationExtra)}</>
+                  )}
+                </span>
+              )}
+            </div>
 
             {/* Dropdown para adicionar personalização */}
             <div>
@@ -182,7 +259,13 @@ export function ProductInfo({ product, availableOptions, size }: ProductInfoProp
                   if (!option) return null;
 
                   return (
-                    <div key={option.id} className="border-secondary ring-1 rounded-lg p-4 space-y-3">
+                    <div
+                      key={option.id}
+                      ref={(ref) => {
+                        customizationCardRefs.current[option.id] = ref;
+                      }}
+                      className="border-secondary ring-1 rounded-lg p-4 space-y-3"
+                    >
                       {/* Cabeçalho da personalização */}
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
@@ -214,35 +297,77 @@ export function ProductInfo({ product, availableOptions, size }: ProductInfoProp
 
                       {/* Campo de entrada baseado no tipo */}
                       {option.input_type === 'text' && (
-                        <Input
-                          placeholder="Digite aqui..."
-                          value={customizationValues[option.id] || ''}
-                          onChange={(e) => handleCustomizationChange(option.id, e.target.value)}
-                        />
+                        <div>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs text-muted-foreground">Obrigatório</span>
+                            {option.price_extra && option.price_extra > 0 && (
+                              <span className="text-xs text-muted-foreground">
+                                + {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(option.price_extra)}
+                              </span>
+                            )}
+                          </div>
+                          <Input
+                            ref={(ref) => {
+                              customizationFieldRefs.current[option.id] = ref;
+                            }}
+                            placeholder="Digite aqui..."
+                            value={customizationValues[option.id] || ''}
+                            onChange={(e) => handleCustomizationChange(option.id, e.target.value)}
+                            className={customizationErrors[option.id] ? "border-destructive ring-1 ring-destructive" : ""}
+                          />
+                          {customizationErrors[option.id] && (
+                            <p className="text-xs text-destructive mt-1">
+                              {customizationErrors[option.id]}
+                            </p>
+                          )}
+                        </div>
                       )}
 
                       {option.input_type === 'select' && (
-                        <Select 
-                          onValueChange={(val) => handleCustomizationChange(option.id, val)}
-                          value={customizationValues[option.id] || ''}
-                        >
-                          <SelectTrigger className="border-foreground ring-1">
-                            <SelectValue placeholder="Selecione uma opção" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {option.available_options?.map((optVal, idx) => (
-                              <SelectItem key={idx} value={optVal}>
-                                {optVal}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <div>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs text-muted-foreground">Obrigatório</span>
+                            {option.price_extra && option.price_extra > 0 && (
+                              <span className="text-xs text-muted-foreground">
+                                + {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(option.price_extra)}
+                              </span>
+                            )}
+                          </div>
+                          <Select 
+                            onValueChange={(val) => handleCustomizationChange(option.id, val)}
+                            value={customizationValues[option.id] || ''}
+                          >
+                            <SelectTrigger
+                              ref={(ref) => {
+                                customizationFieldRefs.current[option.id] = ref;
+                              }}
+                              className={customizationErrors[option.id] ? "border-destructive ring-1 ring-destructive" : "border-foreground ring-1"}
+                            >
+                              <SelectValue placeholder="Selecione uma opção" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {option.available_options?.map((optVal, idx) => (
+                                <SelectItem key={idx} value={optVal}>
+                                  {optVal}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {customizationErrors[option.id] && (
+                            <p className="text-xs text-destructive mt-1">
+                              {customizationErrors[option.id]}
+                            </p>
+                          )}
+                        </div>
                       )}
 
                       {option.input_type === 'boolean' && (
-                        <div className="flex items-center space-x-2 ">
+                        <div className="flex items-center space-x-2">
                           <Checkbox 
                             id={`cust-${option.id}`}
+                            ref={(ref) => {
+                              customizationFieldRefs.current[option.id] = ref;
+                            }}
                             checked={customizationValues[option.id] === 'Sim'}
                             onCheckedChange={(checked) => 
                               handleCustomizationChange(option.id, checked ? 'Sim' : 'Não')
@@ -252,7 +377,7 @@ export function ProductInfo({ product, availableOptions, size }: ProductInfoProp
                             htmlFor={`cust-${option.id}`} 
                             className="text-sm font-medium leading-none cursor-pointer"
                           >
-                            Sim, desejo adicionar
+                            Adicionar
                           </label>
                         </div>
                       )}
@@ -301,6 +426,11 @@ export function ProductInfo({ product, availableOptions, size }: ProductInfoProp
         >
           {getButtonText()}
         </Button>
+        {selectedCustomizations.length > 0 && (
+          <p className="text-xs text-muted-foreground mt-2">
+            Personalizações são aplicadas ao preço unitário do item.
+          </p>
+        )}
       </div>
     </div>
   );
