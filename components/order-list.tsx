@@ -65,6 +65,11 @@ const statusConfig: Record<string, {
     icon: CheckCircle,
     badgeVariant: "default",
   },
+  processing: {
+    label: "Em Separação",
+    icon: Package,
+    badgeVariant: "default",
+  },
   shipped: {
     label: "Enviado",
     icon: Truck,
@@ -268,6 +273,7 @@ export function OrdersList({ orders = [], onCancel }: OrdersListProps) {
     all: orders.length,
     pending: orders.filter((o) => o.status === "pending").length,
     paid: orders.filter((o) => o.status === "paid").length,
+    processing: orders.filter((o) => o.status === "processing").length,
     shipped: orders.filter((o) => o.status === "shipped").length,
     delivered: orders.filter((o) => o.status === "delivered").length,
     canceled: orders.filter((o) => o.status === "canceled").length,
@@ -294,6 +300,7 @@ export function OrdersList({ orders = [], onCancel }: OrdersListProps) {
             { key: "all", label: "Todos" },
             { key: "pending", label: "Pendentes" },
             { key: "paid", label: "Pagos" },
+            { key: "processing", label: "Em Separação" },
             { key: "shipped", label: "Enviados" },
             { key: "delivered", label: "Entregues" },
             { key: "canceled", label: "Cancelados" },
