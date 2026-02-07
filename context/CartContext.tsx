@@ -96,6 +96,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                 name: item.product?.name ?? "Produto Indisponível",
                 price: parseFloat(item.price ?? item.unit_price ?? item.product?.price ?? "0"),
                 image: item.product?.image ?? "",
+                stock_quantity: item.product?.stock_quantity ?? item.stock_quantity ?? 0,
+                stock: item.product?.stock ?? item.stock ?? true,
                 essence: item.essence ? {
                     id: item.essence.id,
                     name: item.essence.name,

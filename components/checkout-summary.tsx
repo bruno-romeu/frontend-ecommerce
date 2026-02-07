@@ -74,6 +74,7 @@ export function CheckoutSummary({
 }: CheckoutSummaryProps) {
   const { cartItems, total } = useCart()
   const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0)
+  const hasBackorderItems = cartItems.some((item) => item.stock_quantity <= 0)
   
   const [cep, setCep] = useState("")
   const [isCalculating, setIsCalculating] = useState(false)
@@ -243,6 +244,11 @@ export function CheckoutSummary({
           <span>Subtotal ({totalQuantity} {totalQuantity === 1 ? 'item' : 'itens'})</span>
           <span className="font-medium">R$ {total.toFixed(2).replace(".", ",")}</span>
         </div>
+        {hasBackorderItems && (
+          <p className="text-xs text-muted-foreground">
+            Alguns itens estao sob encomenda e podem ter prazo maior de envio.
+          </p>
+        )}
 
         <div className="pt-2 space-y-2">
           {!couponData ? (

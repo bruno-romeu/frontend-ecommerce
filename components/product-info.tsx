@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Input } from "./ui/input";
-import { Label } from "recharts";
 import { Checkbox } from "@radix-ui/react-checkbox";
 import { Product, AvailableOptions, Size } from "@/lib/types"; 
 import { Button } from "@/components/ui/button";
@@ -39,7 +38,7 @@ export function ProductInfo({ product, availableOptions, size }: ProductInfoProp
   
   const isEssenceSelectionMissing = hasEssenceOptions && selectedEssenceId === null;
 
-  const hasStock = product.stock_quantity > 0;
+  const isBackorder = product.stock_quantity <= 0;
 
   const handleCustomizationChange = (optionId: number, value: string) => {
     setCustomizationValues(prev => ({
@@ -136,8 +135,8 @@ export function ProductInfo({ product, availableOptions, size }: ProductInfoProp
 
   const getButtonText = () => {
     if (loading) return 'Adicionando...';
-    if (!hasStock) return 'Fora de estoque';
     if (isEssenceSelectionMissing) return 'Selecione uma essência';
+    if (isBackorder) return 'Comprar sob encomenda';
     return 'Adicionar ao Carrinho';
   };
 
@@ -164,11 +163,20 @@ export function ProductInfo({ product, availableOptions, size }: ProductInfoProp
       )}
 
       {/* Status do Estoque */}
-      <div className="text-sm font-medium">
-        {hasStock ? (
-          <span className="bg-green-100 rounded-2xl p-1.5 text-green-800">Em estoque</span>
+      <div className="text-sm font-medium space-y-1">
+        {isBackorder ? (
+          <span className="inline-flex items-center rounded-2xl bg-accent/20 px-2 py-1 text-xs font-medium text-foreground">
+            Sob encomenda
+          </span>
         ) : (
-          <span className="text-red-600">Fora de estoque</span>
+          <span className="inline-flex items-center rounded-2xl bg-secondary/20 px-2 py-1 text-xs font-medium text-foreground">
+            Em estoque
+          </span>
+        )}
+        {isBackorder && (
+          <p className="text-xs text-muted-foreground">
+            Produzimos sob demanda. O prazo de envio pode ser maior.
+          </p>
         )}
       </div>
 
@@ -218,7 +226,7 @@ export function ProductInfo({ product, availableOptions, size }: ProductInfoProp
             <div className="flex items-center justify-between">
               <h3 className="font-medium text-lg">Personalize seu pedido</h3>
               {selectedCustomizations.length > 0 && (
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-foreground/80">
                   {selectedCustomizations.length} personaliza{selectedCustomizations.length > 1 ? "ções" : "ção"}
                   {selectedCustomizationExtra > 0 && (
                     <> • + {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(selectedCustomizationExtra)}</>
@@ -273,7 +281,7 @@ export function ProductInfo({ product, availableOptions, size }: ProductInfoProp
                             {option.name}
                           </h4>
                           {option.instruction && (
-                            <p className="text-sm text-muted-foreground mt-0.5">
+                            <p className="text-sm text-foreground/80 mt-0.5">
                               {option.instruction}
                             </p>
                           )}
@@ -299,9 +307,9 @@ export function ProductInfo({ product, availableOptions, size }: ProductInfoProp
                       {option.input_type === 'text' && (
                         <div>
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs text-muted-foreground">Obrigatório</span>
+                            <span className="text-xs text-foreground/80">Obrigatório</span>
                             {option.price_extra && option.price_extra > 0 && (
-                              <span className="text-xs text-muted-foreground">
+                              <span className="text-xs text-foreground/80">
                                 + {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(option.price_extra)}
                               </span>
                             )}
@@ -326,9 +334,9 @@ export function ProductInfo({ product, availableOptions, size }: ProductInfoProp
                       {option.input_type === 'select' && (
                         <div>
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs text-muted-foreground">Obrigatório</span>
+                            <span className="text-xs text-foreground/80">Obrigatório</span>
                             {option.price_extra && option.price_extra > 0 && (
-                              <span className="text-xs text-muted-foreground">
+                              <span className="text-xs text-foreground/80">
                                 + {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(option.price_extra)}
                               </span>
                             )}
@@ -422,12 +430,12 @@ export function ProductInfo({ product, availableOptions, size }: ProductInfoProp
           size="lg"
           className="w-full bg-accent hover:bg-accent-hover text-foreground text-sm sm:text-base cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleAddToCart}
-          disabled={loading || !hasStock || isEssenceSelectionMissing}
+          disabled={loading || isEssenceSelectionMissing}
         >
           {getButtonText()}
         </Button>
         {selectedCustomizations.length > 0 && (
-          <p className="text-xs text-muted-foreground mt-2">
+          <p className="text-xs text-foreground/80 mt-2">
             Personalizações são aplicadas ao preço unitário do item.
           </p>
         )}

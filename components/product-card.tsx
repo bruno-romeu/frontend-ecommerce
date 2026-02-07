@@ -6,11 +6,18 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const isBackorder = product.stock_quantity <= 0;
+
   return (
     <div className="relative group">
       <Link href={`/produto/${product.slug}`} className="absolute inset-0 z-10">
         <span className="sr-only">Ver produto</span>
       </Link>
+      {isBackorder && (
+        <span className="absolute left-3 top-3 z-20 rounded-full bg-accent/90 px-2 py-1 text-xs font-semibold text-foreground">
+          Sob encomenda
+        </span>
+      )}
       <img
         src={product.image ||"/placeholder.svg"}
         alt={product.name}

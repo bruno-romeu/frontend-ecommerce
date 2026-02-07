@@ -25,6 +25,11 @@ export function CartItems() {
                   <p className="text-xs sm:text-sm text-foreground">
                     {item.size?.name}{item.essence?.name}
                   </p>
+                  {item.stock_quantity <= 0 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Sob encomenda. O prazo pode ser maior.
+                    </p>
+                  )}
                 </div>
                 <Button
                   variant="ghost"

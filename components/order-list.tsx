@@ -18,6 +18,7 @@ interface OrderItem {
   product: Product;
   quantity: number;
   price: string | number;
+  backorder_quantity?: number;
 }
 
 interface ShippingInfo {
@@ -26,6 +27,10 @@ interface ShippingInfo {
   carrier?: string;
   estimated_delivery?: string;
   status: string;
+  cost?: string | number;
+  price?: string | number;
+  shipping_cost?: string | number;
+  shipping_price?: string | number;
 }
 
 interface PaymentInfo {
@@ -42,6 +47,8 @@ export interface Order {
   created_at: string;
   items: OrderItem[];
   shipping?: ShippingInfo;
+  shipping_cost?: string | number;
+  shipping_price?: string | number;
   payment?: PaymentInfo;
 }
 
@@ -103,6 +110,19 @@ function OrderCard({ order, isExpanded, onToggle, onCancel, isCanceling }: Order
   const total = typeof order.total === "string" 
     ? parseFloat(order.total).toFixed(2) 
     : order.total.toFixed(2);
+  const shippingCostRaw =
+    order.shipping_cost ??
+    order.shipping_price ??
+    order.shipping?.cost ??
+    order.shipping?.price ??
+    order.shipping?.shipping_cost ??
+    order.shipping?.shipping_price;
+  const shippingCost =
+    shippingCostRaw !== undefined && shippingCostRaw !== null
+      ? (typeof shippingCostRaw === "string"
+          ? parseFloat(shippingCostRaw)
+          : shippingCostRaw)
+      : null;
 
   const handleCancelClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -155,21 +175,24 @@ function OrderCard({ order, isExpanded, onToggle, onCancel, isCanceling }: Order
                   order.items.map((item) => (
                     <div
                       key={item.id}
-                      className="flex justify-between items-center text-xs sm:text-sm"
+                      className="flex flex-col gap-1 text-xs sm:text-sm sm:flex-row sm:items-center sm:justify-between"
                     >
-                      <span className="text-foreground font-semibold">
-                        {item.quantity}x {item.product.name}
-                      </span>
+                      <div className="space-y-1">
+                        <span className="text-foreground font-semibold">
+                          {item.quantity}x {item.product.name}
+                        </span>
+                        {item.backorder_quantity && item.backorder_quantity > 0 && (
+                          <span className="block text-xs text-muted-foreground">
+                            Sob encomenda: {item.backorder_quantity} un.
+                          </span>
+                        )}
+                      </div>
                       <span className="text-sm font-bold">
                         Produtos: R${" "}
                         {(typeof item.price === "string" 
                           ? parseFloat(item.price) 
                           : item.price
                         ).toFixed(2).replace(".", ",")}
-                        <p>
-                          Frete: R${" "}
-                          
-                        </p>
                       </span>
                     </div>
                   ))
@@ -178,6 +201,15 @@ function OrderCard({ order, isExpanded, onToggle, onCancel, isCanceling }: Order
                 )}
               </div>
             </div>
+
+            {shippingCost !== null && !Number.isNaN(shippingCost) && (
+              <div className="flex items-center justify-between text-xs sm:text-sm">
+                <span className="text-foreground font-semibold">Frete</span>
+                <span className="text-sm font-bold">
+                  R$ {shippingCost.toFixed(2).replace(".", ",")}
+                </span>
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-3">
               {order.payment && (
